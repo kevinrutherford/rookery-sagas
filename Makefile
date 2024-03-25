@@ -1,6 +1,6 @@
 DEPCRUISE_CONFIG := .dependency-cruiser.cjs
 GRAPHS_DIR      := graphs
-IMAGE           := kevinrutherford/rookery-commands
+IMAGE           := kevinrutherford/rookery-sagas
 IMAGE_VERSION := $(shell git describe --tags)
 MK_IMAGE  := .mk-built
 MK_PUBLISHED    := .mk-published
