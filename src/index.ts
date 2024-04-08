@@ -1,7 +1,7 @@
 import * as L from './logger'
 
-const doNothing = async () => {
-  console.log('Doing nothing')
+const doNothing = async (logger: L.Logger) => {
+  logger.info('Doing nothing')
 }
 
 void (async (): Promise<void> => {
@@ -12,6 +12,6 @@ void (async (): Promise<void> => {
   })
 
   logger.info('Starting sagas')
-  setInterval(async () => doNothing(), 307 * 1000)
+  setInterval(async () => doNothing(logger), 307 * 1000)
 })()
 
