@@ -9,6 +9,6 @@ void (async (): Promise<void> => {
   })
 
   logger.info('Starting sagas')
-  setInterval(async () => fetchMissingFrontMatter(logger), 307 * 1000)
+  setInterval(async () => fetchMissingFrontMatter(logger), 67 * 1000)
 })()
 

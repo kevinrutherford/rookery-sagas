@@ -40,7 +40,7 @@ const recordNotFound = (logger: L.Logger) => (work: WorkResponse['data'][number]
       error,
     }),
   ),
-  TE.map(() => logger.info('work updated')),
+  TE.map(() => logger.info('work updated', { id: work.id, 'new-status': 'not-found' })),
 )
 
 export const fetchMissingFrontMatter = async (logger: L.Logger): Promise<void> => {
