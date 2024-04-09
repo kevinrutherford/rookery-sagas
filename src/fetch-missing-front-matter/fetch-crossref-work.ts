@@ -19,6 +19,22 @@ const crossrefResponse = t.type({
   }),
 })
 
+type CrossrefResponse = t.TypeOf<typeof crossrefResponse>
+
+const toUpdateOf = (work: Work) => (response: CrossrefResponse): Work => ({
+  type: work.type,
+  id: work.id,
+  attributes: {
+    crossrefStatus: 'found' as const,
+    title: response.message.title[0],
+    abstract: response.message.abstract,
+    authors: pipe(
+      response.message.author,
+      A.map((a) => `${a.given} ${a.family}`),
+    ),
+  },
+})
+
 export const fetchCrossrefWork = (logger: L.Logger) => (work: Work): TE.TaskEither<unknown, Work> => {
   const url = `https://api.crossref.org/works/${work.id}`
   return pipe(
@@ -33,19 +49,7 @@ export const fetchCrossrefWork = (logger: L.Logger) => (work: Work): TE.TaskEith
       crossrefResponse.decode,
       E.mapLeft((errors) => logger.error('invalid response from Crossref', { url, errors: formatValidationErrors(errors) })),
     )),
-    TE.map((response) => ({
-      type: work.type,
-      id: work.id,
-      attributes: {
-        crossrefStatus: 'found' as const,
-        title: response.message.title[0],
-        abstract: response.message.abstract,
-        authors: pipe(
-          response.message.author,
-          A.map((a) => `${a.given} ${a.family}`),
-        ),
-      },
-    })),
+    TE.map(toUpdateOf(work)),
   )
 }
 
