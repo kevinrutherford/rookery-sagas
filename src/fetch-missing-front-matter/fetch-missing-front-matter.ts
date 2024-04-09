@@ -1,4 +1,5 @@
 import axios from 'axios'
+import * as A from 'fp-ts/Array'
 import * as E from 'fp-ts/Either'
 import * as RA from 'fp-ts/ReadonlyArray'
 import * as T from 'fp-ts/Task'
@@ -21,7 +22,7 @@ const crossrefResponse = t.type({
   }),
 })
 
-const fetchCrossrefWork = (logger: L.Logger) => (work: Work) => {
+const fetchCrossrefWork = (logger: L.Logger) => (work: Work): TE.TaskEither<unknown, Work> => {
   const url = `https://api.crossref.org/works/${work.id}`
   return pipe(
     TE.tryCatch(
@@ -35,7 +36,19 @@ const fetchCrossrefWork = (logger: L.Logger) => (work: Work) => {
       crossrefResponse.decode,
       E.mapLeft((errors) => logger.error('invalid response from Crossref', { url, errors: formatValidationErrors(errors) })),
     )),
-    TE.map(() => work),
+    TE.map((response) => ({
+      type: work.type,
+      id: work.id,
+      attributes: {
+        crossrefStatus: 'found' as const,
+        title: response.message.title[0],
+        abstract: response.message.abstract,
+        authors: pipe(
+          response.message.author,
+          A.map((a) => `${a.given} ${a.family}`),
+        ),
+      },
+    })),
   )
 }
 
@@ -48,7 +61,7 @@ const saveUpdatedWork = (logger: L.Logger) => (work: Work) => {
       }),
       (error) => logger.error('failed to update work', { url, work, error }),
     ),
-    TE.map(() => logger.info('work updated', { id: work.id, 'new-status': 'not-found' })),
+    TE.map(() => logger.info('work updated', { work })),
   )
 }
 
@@ -65,13 +78,6 @@ export const fetchMissingFrontMatter = async (logger: L.Logger): Promise<void> =
     fetchWorks(logger),
     TE.chainEitherKW(selectWorkToUpdate),
     TE.chainW(fetchCrossrefWork(logger)),
-    TE.map((work) => ({
-      type: work.type,
-      id: work.id,
-      attributes: {
-        crossrefStatus: 'not-found' as const,
-      },
-    })),
     TE.chainW(saveUpdatedWork(logger)),
     T.map(() => logger.info('fetchMissingFrontMatter finished')),
   )()
