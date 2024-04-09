@@ -7,7 +7,7 @@ import * as TE from 'fp-ts/TaskEither'
 import { flow, pipe } from 'fp-ts/function'
 import * as t from 'io-ts'
 import { formatValidationErrors } from 'io-ts-reporters'
-import * as L from './logger'
+import * as L from '../logger'
 
 const workResponse = t.type({
   data: t.array(t.type({
