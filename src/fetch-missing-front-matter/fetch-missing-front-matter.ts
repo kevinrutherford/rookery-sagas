@@ -39,19 +39,11 @@ const fetchCrossrefWork = (logger: L.Logger) => (work: Work) => {
   )
 }
 
-const recordNotFound = (logger: L.Logger) => (work: Work) => {
+const saveUpdatedWork = (logger: L.Logger) => (work: Work) => {
   const url = `http://commands:44001/works/${work.id}`
   return pipe(
     TE.tryCatch(
-      async () => axios.patch(url, {
-        data: {
-          type: work.type,
-          id: work.id,
-          attributes: {
-            crossrefStatus: 'not-found',
-          },
-        },
-      }, {
+      async () => axios.patch(url, { data: work }, {
         headers: { 'Content-Type': 'application/json' },
       }),
       (error) => logger.error('failed to update work', { url, work, error }),
@@ -73,7 +65,14 @@ export const fetchMissingFrontMatter = async (logger: L.Logger): Promise<void> =
     fetchWorks(logger),
     TE.chainEitherKW(selectWorkToUpdate),
     TE.chainW(fetchCrossrefWork(logger)),
-    TE.chainW(recordNotFound(logger)),
+    TE.map((work) => ({
+      type: work.type,
+      id: work.id,
+      attributes: {
+        crossrefStatus: 'not-found' as const,
+      },
+    })),
+    TE.chainW(saveUpdatedWork(logger)),
     T.map(() => logger.info('fetchMissingFrontMatter finished')),
   )()
 }
