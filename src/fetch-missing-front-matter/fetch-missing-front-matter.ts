@@ -3,10 +3,41 @@ import * as E from 'fp-ts/Either'
 import * as RA from 'fp-ts/ReadonlyArray'
 import * as T from 'fp-ts/Task'
 import * as TE from 'fp-ts/TaskEither'
-import { pipe } from 'fp-ts/function'
+import { flow, pipe } from 'fp-ts/function'
+import * as t from 'io-ts'
+import { formatValidationErrors } from 'io-ts-reporters'
 import { fetchWorks } from './fetch-works'
 import { Work } from './work'
 import * as L from '../logger'
+
+const crossrefResponse = t.type({
+  message: t.type({
+    title: t.array(t.string),
+    abstract: t.string,
+    author: t.array(t.type({
+      given: t.string,
+      family: t.string,
+    })),
+  }),
+})
+
+const fetchCrossrefWork = (logger: L.Logger) => (work: Work) => {
+  const url = `https://api.crossref.org/works/${work.id}`
+  return pipe(
+    TE.tryCatch(
+      async () => axios.get(url, {
+        headers: { 'Content-Type': 'application/json' },
+      }),
+      (error) => logger.error('failed to fetch Crossref work', { url, error }),
+    ),
+    TE.map((res) => res.data),
+    TE.chainEitherK(flow(
+      crossrefResponse.decode,
+      E.mapLeft((errors) => logger.error('invalid response from Crossref', { url, errors: formatValidationErrors(errors) })),
+    )),
+    TE.map(() => work),
+  )
+}
 
 const recordNotFound = (logger: L.Logger) => (work: Work) => {
   const url = `http://commands:44001/works/${work.id}`
@@ -41,6 +72,7 @@ export const fetchMissingFrontMatter = async (logger: L.Logger): Promise<void> =
     'http://views:44002/works?filter[crossrefStatus]=not-determined',
     fetchWorks(logger),
     TE.chainEitherKW(selectWorkToUpdate),
+    TE.chainW(fetchCrossrefWork(logger)),
     TE.chainW(recordNotFound(logger)),
     T.map(() => logger.info('fetchMissingFrontMatter finished')),
   )()
