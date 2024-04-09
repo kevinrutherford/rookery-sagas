@@ -2,7 +2,7 @@ import axios from 'axios'
 import * as A from 'fp-ts/Array'
 import * as E from 'fp-ts/Either'
 import * as TE from 'fp-ts/TaskEither'
-import { flow, pipe } from 'fp-ts/function'
+import { flow, identity, pipe } from 'fp-ts/function'
 import * as t from 'io-ts'
 import { formatValidationErrors } from 'io-ts-reporters'
 import { Work } from './work'
@@ -35,6 +35,10 @@ const toUpdateOf = (work: Work) => (response: CrossrefResponse): Work => ({
   },
 })
 
+const isNotFound = (error: unknown) => (
+  axios.isAxiosError(error) && error.response?.status !== undefined && [404, 410].includes(error.response?.status)
+)
+
 export const fetchCrossrefWork = (logger: L.Logger) => (work: Work): TE.TaskEither<unknown, Work> => {
   const url = `https://api.crossref.org/works/${work.id}`
   return pipe(
@@ -42,14 +46,36 @@ export const fetchCrossrefWork = (logger: L.Logger) => (work: Work): TE.TaskEith
       async () => axios.get(url, {
         headers: { 'Content-Type': 'application/json' },
       }),
-      (error) => logger.error('failed to fetch Crossref work', { url, error }),
+      (error) => {
+        if (isNotFound(error)) {
+          return E.right({
+            type: work.type,
+            id: work.id,
+            attributes: {
+              crossrefStatus: 'not-found' as const,
+            },
+          })
+        }
+        logger.error('unknown error from Crossref', { error })
+        return E.left(undefined)
+      },
     ),
     TE.map((res) => res.data),
-    TE.chainEitherK(flow(
+    TE.chainEitherKW(flow(
       crossrefResponse.decode,
-      E.mapLeft((errors) => logger.error('invalid response from Crossref', { url, errors: formatValidationErrors(errors) })),
+      E.mapLeft((errors) => {
+        logger.error('invalid response from Crossref', { url, errors: formatValidationErrors(errors) })
+        return E.left(undefined)
+      }),
     )),
-    TE.map(toUpdateOf(work)),
+    TE.matchW(
+      identity,
+      (data) => pipe(
+        data,
+        toUpdateOf(work),
+        E.right,
+      ),
+    ),
   )
 }
 
