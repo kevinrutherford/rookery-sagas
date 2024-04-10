@@ -3,8 +3,8 @@ import * as E from 'fp-ts/Either'
 import * as TE from 'fp-ts/TaskEither'
 import { flow, pipe } from 'fp-ts/function'
 import { formatValidationErrors } from 'io-ts-reporters'
-import { Work, worksResponse } from './work'
 import * as L from '../logger'
+import { Work, worksResponse } from '../resources/work'
 
 export const fetchWorks = (logger: L.Logger) => (url: string): TE.TaskEither<unknown, ReadonlyArray<Work>> => pipe(
   TE.tryCatch(

@@ -5,8 +5,8 @@ import * as TE from 'fp-ts/TaskEither'
 import { flow, identity, pipe } from 'fp-ts/function'
 import * as t from 'io-ts'
 import { formatValidationErrors } from 'io-ts-reporters'
-import { Work } from './work'
 import * as L from '../logger'
+import { Work } from '../resources/work'
 
 const crossrefResponse = t.type({
   message: t.type({

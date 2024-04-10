@@ -5,9 +5,9 @@ import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
 import { fetchCrossrefWork } from './fetch-crossref-work'
 import { fetchWorks } from './fetch-works'
-import { saveUpdate } from './save-update'
-import { Work } from './work'
+import { saveUpdate } from '../api-commands/update-work'
 import * as L from '../logger'
+import { Work } from '../resources/work'
 
 const selectWorkToUpdate = (works: ReadonlyArray<Work>) => pipe(
   works,
