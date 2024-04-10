@@ -5,6 +5,7 @@ import * as TE from 'fp-ts/TaskEither'
 import { flow, identity, pipe } from 'fp-ts/function'
 import * as t from 'io-ts'
 import { formatValidationErrors } from 'io-ts-reporters'
+import { FrontMatterResponse } from '../fetch-missing-front-matter/front-matter-response'
 import * as L from '../logger'
 import { Work } from '../resources/work'
 
@@ -39,7 +40,7 @@ const isNotFound = (error: unknown) => (
   axios.isAxiosError(error) && error.response?.status !== undefined && [404, 410].includes(error.response?.status)
 )
 
-export const fetchCrossrefWork = (logger: L.Logger) => (work: Work): TE.TaskEither<unknown, Work> => {
+export const fetchCrossrefWork = (logger: L.Logger) => (work: Work): TE.TaskEither<FrontMatterResponse, Work> => {
   const url = `https://api.crossref.org/works/${work.id}`
   return pipe(
     TE.tryCatch(
@@ -57,7 +58,10 @@ export const fetchCrossrefWork = (logger: L.Logger) => (work: Work): TE.TaskEith
           })
         }
         logger.error('unknown error from Crossref', { error })
-        return E.left(undefined)
+        return E.left({
+          type: 'unavailable' as const,
+          details: JSON.stringify(error),
+        })
       },
     ),
     TE.map((res) => res.data),
@@ -65,7 +69,10 @@ export const fetchCrossrefWork = (logger: L.Logger) => (work: Work): TE.TaskEith
       crossrefResponse.decode,
       E.mapLeft((errors) => {
         logger.error('invalid response from Crossref', { url, errors: formatValidationErrors(errors) })
-        return E.left(undefined)
+        return E.left({
+          type: 'invalid' as const,
+          details: formatValidationErrors(errors).join('\n'),
+        })
       }),
     )),
     TE.matchW(
