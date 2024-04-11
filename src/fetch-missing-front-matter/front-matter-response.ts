@@ -1,24 +1,24 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type FrontMatterFound = {
   type: 'found',
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type FrontMatterNotFound = {
   type: 'not-found',
 }
 
 type FrontMatterUnavailable = {
-  type: 'unavailable',
+  type: 'response-unavailable',
   details: string,
 }
 
 type FrontMatterInvalid = {
-  type: 'invalid',
+  type: 'response-invalid',
   details: string,
 }
 
 export type FrontMatterResponse =
-  | FrontMatterFound
-  | FrontMatterNotFound
   | FrontMatterUnavailable
   | FrontMatterInvalid
 

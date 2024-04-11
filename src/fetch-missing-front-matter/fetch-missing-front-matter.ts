@@ -24,6 +24,17 @@ export const fetchMissingFrontMatter = async (logger: L.Logger): Promise<void> =
     TE.chainW((work) => pipe(
       work,
       fetchCrossrefWork(logger),
+      TE.mapLeft((fmr) => pipe(
+        {
+          type: work.type,
+          id: work.id,
+          attributes: {
+            crossrefStatus: 'not-determined',
+            reason: fmr.type,
+          },
+        },
+        updateWork(logger),
+      )),
     )),
     TE.chainW(updateWork(logger)),
     T.map(() => logger.info('fetchMissingFrontMatter finished')),

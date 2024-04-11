@@ -59,7 +59,7 @@ export const fetchCrossrefWork = (logger: L.Logger) => (work: Work): TE.TaskEith
         }
         logger.error('unknown error from Crossref', { error })
         return E.left({
-          type: 'unavailable' as const,
+          type: 'response-unavailable' as const,
           details: JSON.stringify(error),
         })
       },
@@ -70,7 +70,7 @@ export const fetchCrossrefWork = (logger: L.Logger) => (work: Work): TE.TaskEith
       E.mapLeft((errors) => {
         logger.error('invalid response from Crossref', { url, errors: formatValidationErrors(errors) })
         return E.left({
-          type: 'invalid' as const,
+          type: 'response-invalid' as const,
           details: formatValidationErrors(errors).join('\n'),
         })
       }),

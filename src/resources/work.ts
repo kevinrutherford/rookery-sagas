@@ -2,6 +2,7 @@ import * as t from 'io-ts'
 
 const notDetermined = t.type({
   crossrefStatus: t.literal('not-determined'),
+  reason: t.union([t.literal('never-fetched'), t.literal('response-unavailable'), t.literal('response-invalid')]),
 })
 
 const notFound = t.type({
