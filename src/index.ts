@@ -1,7 +1,7 @@
 import { fetchMissingFrontMatter } from './fetch-missing-front-matter'
 import * as L from './logger'
 
-void (async (): Promise<void> => {
+const main = async (): Promise<void> => {
   const logger = L.create({
     emit: (s: string) => process.stdout.write(s),
     colour: process.env.NODE_ENV !== 'production',
@@ -10,5 +10,7 @@ void (async (): Promise<void> => {
 
   logger.info('Starting sagas')
   setInterval(async () => fetchMissingFrontMatter(logger), 67 * 1000)
-})()
+}
+
+main()
 
