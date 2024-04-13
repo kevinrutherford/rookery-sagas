@@ -6,6 +6,7 @@ import { pipe } from 'fp-ts/function'
 import { fetchWorks } from './fetch-works'
 import { updateWork } from '../api-commands/update-work'
 import { fetchCrossrefWork } from '../crossref/fetch-crossref-work'
+import { Saga } from '../invoke'
 import * as L from '../logger'
 import { Work } from '../resources/work'
 
@@ -15,9 +16,9 @@ const selectWorkToUpdate = (works: ReadonlyArray<Work>) => pipe(
   E.fromOption(() => {}),
 )
 
-export const fetchMissingFrontMatter = async (logger: L.Logger): Promise<void> => {
+export const fetchMissingFrontMatter = (logger: L.Logger): Saga => {
   logger.info('fetchMissingFrontMatter starting')
-  await pipe(
+  return pipe(
     'http://views:44002/works?filter[crossrefStatus]=not-determined',
     fetchWorks(logger),
     TE.chainEitherKW(selectWorkToUpdate),
@@ -37,7 +38,7 @@ export const fetchMissingFrontMatter = async (logger: L.Logger): Promise<void> =
       )),
     )),
     TE.chainW(updateWork(logger)),
-    T.map(() => logger.info('fetchMissingFrontMatter finished')),
-  )()
+    T.map(() => {}),
+  )
 }
 
