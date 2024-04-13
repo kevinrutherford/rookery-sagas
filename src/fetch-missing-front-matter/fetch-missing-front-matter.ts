@@ -16,29 +16,26 @@ const selectWorkToUpdate = (works: ReadonlyArray<Work>) => pipe(
   E.fromOption(() => {}),
 )
 
-export const fetchMissingFrontMatter = (logger: L.Logger): Saga => {
-  logger.info('fetchMissingFrontMatter starting')
-  return pipe(
-    'http://views:44002/works?filter[crossrefStatus]=not-determined',
-    fetchWorks(logger),
-    TE.chainEitherKW(selectWorkToUpdate),
-    TE.chainW((work) => pipe(
-      work,
-      fetchCrossrefWork(logger),
-      TE.mapLeft((fmr) => pipe(
-        {
-          type: work.type,
-          id: work.id,
-          attributes: {
-            crossrefStatus: 'not-determined',
-            reason: fmr.type,
-          },
+export const fetchMissingFrontMatter = (logger: L.Logger): Saga => pipe(
+  'http://views:44002/works?filter[crossrefStatus]=not-determined',
+  fetchWorks(logger),
+  TE.chainEitherKW(selectWorkToUpdate),
+  TE.chainW((work) => pipe(
+    work,
+    fetchCrossrefWork(logger),
+    TE.mapLeft((fmr) => pipe(
+      {
+        type: work.type,
+        id: work.id,
+        attributes: {
+          crossrefStatus: 'not-determined',
+          reason: fmr.type,
         },
-        updateWork(logger),
-      )),
+      },
+      updateWork(logger),
     )),
-    TE.chainW(updateWork(logger)),
-    T.map(() => {}),
-  )
-}
+  )),
+  TE.chainW(updateWork(logger)),
+  T.map(() => {}),
+)
 

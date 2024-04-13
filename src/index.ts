@@ -12,7 +12,9 @@ const main = async (): Promise<void> => {
   })
 
   const invoke = (saga: Saga) => pipe(
-    saga,
+    T.of(null),
+    T.map(() => logger.info('fetchMissingFrontMatter starting')),
+    T.map(saga),
     T.map(() => logger.info('fetchMissingFrontMatter finished')),
   )
 
