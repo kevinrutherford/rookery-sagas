@@ -1,4 +1,9 @@
-import * as T from 'fp-ts/Task'
+import * as TE from 'fp-ts/TaskEither'
 
-export type Saga = T.Task<void>
+type FatalError = {
+  message: string,
+  payload: Record<string, unknown>,
+}
+
+export type Saga = TE.TaskEither<FatalError, void>
 

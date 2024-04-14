@@ -1,6 +1,5 @@
 import * as E from 'fp-ts/Either'
 import * as RA from 'fp-ts/ReadonlyArray'
-import * as T from 'fp-ts/Task'
 import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
 import { fetchWorks } from './fetch-works'
@@ -36,6 +35,12 @@ export const fetchMissingFrontMatter = (logger: L.Logger): Saga => pipe(
     )),
   )),
   TE.chainW(updateWork(logger)),
-  T.map(() => {}),
+  TE.mapBoth(
+    () => ({
+      message: 'Ouch!',
+      payload: {},
+    }),
+    () => {},
+  ),
 )
 
