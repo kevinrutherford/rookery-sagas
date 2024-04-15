@@ -7,11 +7,7 @@ import { FatalError, Saga } from '../invoke'
 import * as L from '../logger'
 import { Work } from '../resources/work'
 
-const handleResponse = (
-  logger: L.Logger,
-  upd: typeof api.updateWork,
-  work: Work,
-) => (fmr: FrontMatterResponse): TE.TaskEither<FatalError, null> => {
+const handleResponse = (work: Work) => (fmr: FrontMatterResponse): TE.TaskEither<FatalError, null> => {
   switch (fmr.type) {
     case 'found':
       return pipe(
@@ -25,11 +21,7 @@ const handleResponse = (
             authors: fmr.authors,
           },
         },
-        upd(logger),
-        TE.mapLeft((err) => ({
-          message: JSON.stringify(err),
-          payload: { err },
-        })),
+        api.updateWork,
       )
     case 'not-found':
       return pipe(
@@ -40,11 +32,7 @@ const handleResponse = (
             crossrefStatus: 'not-found',
           },
         },
-        upd(logger),
-        TE.mapLeft((err) => ({
-          message: JSON.stringify(err),
-          payload: { err },
-        })),
+        api.updateWork,
       )
     case 'response-unavailable':
       return pipe(
@@ -56,11 +44,7 @@ const handleResponse = (
             reason: 'response-unavailable',
           },
         },
-        upd(logger),
-        TE.mapLeft((err) => ({
-          message: JSON.stringify(err),
-          payload: { err },
-        })),
+        api.updateWork,
       )
     case 'response-invalid':
       return pipe(
@@ -72,7 +56,7 @@ const handleResponse = (
             reason: 'response-invalid',
           },
         },
-        upd(logger),
+        api.updateWork,
         () => TE.left({
           message: 'could not decode Crossref response',
           payload: { error: fmr.details, doi: work.id },
@@ -85,6 +69,6 @@ export const updateWork = (logger: L.Logger) => (work: Work): Saga => pipe(
   work.id,
   fetchCrossrefWork(logger),
   TE.rightTask,
-  TE.chain(handleResponse(logger, api.updateWork, work)),
+  TE.chain(handleResponse(work)),
 )
 
