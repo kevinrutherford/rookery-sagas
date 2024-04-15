@@ -1,6 +1,6 @@
 import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
-import { FrontMatterResponse } from './front-matter-response'
+import { FrontMatterResponse } from './fetch-front-matter'
 import * as api from '../api'
 import { fetchCrossrefWork } from '../crossref/fetch-crossref-work'
 import { FatalError, Saga } from '../invoke'

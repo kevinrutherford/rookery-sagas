@@ -1,12 +1,11 @@
 import axios from 'axios'
 import * as A from 'fp-ts/Array'
 import * as E from 'fp-ts/Either'
-import * as T from 'fp-ts/Task'
 import * as TE from 'fp-ts/TaskEither'
 import { flow, pipe } from 'fp-ts/function'
 import * as t from 'io-ts'
 import { formatValidationErrors } from 'io-ts-reporters'
-import { FrontMatterResponse } from '../fetch-missing-front-matter/front-matter-response'
+import { FetchFrontMatter, FrontMatterResponse } from '../fetch-missing-front-matter/fetch-front-matter'
 import * as L from '../logger'
 
 const crossrefResponse = t.type({
@@ -24,7 +23,7 @@ const isNotFound = (error: unknown) => (
   axios.isAxiosError(error) && error.response?.status !== undefined && [404, 410].includes(error.response?.status)
 )
 
-export const fetchCrossrefWork = (logger: L.Logger) => (doi: string): T.Task<FrontMatterResponse> => {
+export const fetchCrossrefWork = (logger: L.Logger): FetchFrontMatter => (doi) => {
   const url = `https://api.crossref.org/works/${doi}`
   return pipe(
     TE.tryCatch(
