@@ -1,10 +1,8 @@
 import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
-import { FrontMatterResponse } from './fetch-front-matter'
+import { FetchFrontMatter, FrontMatterResponse } from './fetch-front-matter'
 import * as api from '../api'
-import { fetchCrossrefWork } from '../crossref/fetch-crossref-work'
 import { FatalError, Saga } from '../invoke'
-import * as L from '../logger'
 import { Work } from '../resources/work'
 
 const handleResponse = (work: Work) => (fmr: FrontMatterResponse): TE.TaskEither<FatalError, null> => {
@@ -65,9 +63,9 @@ const handleResponse = (work: Work) => (fmr: FrontMatterResponse): TE.TaskEither
   }
 }
 
-export const updateWork = (logger: L.Logger) => (work: Work): Saga => pipe(
+export const updateWork = (fetchFrontMatter: FetchFrontMatter) => (work: Work): Saga => pipe(
   work.id,
-  fetchCrossrefWork(logger),
+  fetchFrontMatter,
   TE.rightTask,
   TE.chain(handleResponse(work)),
 )

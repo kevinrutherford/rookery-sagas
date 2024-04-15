@@ -1,5 +1,6 @@
 import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
+import { fetchCrossrefWork } from './crossref/fetch-crossref-work'
 import { fetchMissingFrontMatter } from './fetch-missing-front-matter'
 import { Saga } from './invoke'
 import * as L from './logger'
@@ -24,7 +25,7 @@ const main = async (): Promise<void> => {
   }
 
   logger.info('Starting sagas')
-  setInterval(invoke(fetchMissingFrontMatter(logger)), 31 * 1000)
+  setInterval(invoke(fetchMissingFrontMatter(fetchCrossrefWork)), 31 * 1000)
 }
 
 main()
