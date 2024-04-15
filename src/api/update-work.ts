@@ -13,10 +13,7 @@ export const updateWork = (logger: L.Logger) => (work: Work): TE.TaskEither<unkn
       }),
       (error) => logger.error('failed to update work', { url, work, error }),
     ),
-    TE.map(() => {
-      logger.debug('work updated', { work: JSON.stringify(work) })
-      return null
-    }),
+    TE.map(() => null),
   )
 }
 
