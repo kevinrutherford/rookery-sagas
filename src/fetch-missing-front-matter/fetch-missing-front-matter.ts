@@ -22,7 +22,7 @@ const updateWork = (logger: L.Logger) => (work: Work): Saga => pipe(
     },
     api.updateWork(logger),
   )),
-  TE.chainW(updateWork(logger)),
+  TE.chain(api.updateWork(logger)),
   TE.mapBoth(
     (err) => ({
       message: JSON.stringify(err),

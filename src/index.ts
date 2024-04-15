@@ -24,7 +24,7 @@ const main = async (): Promise<void> => {
   }
 
   logger.info('Starting sagas')
-  setInterval(invoke(fetchMissingFrontMatter(logger)), 7 * 1000)
+  setInterval(invoke(fetchMissingFrontMatter(logger)), 31 * 1000)
 }
 
 main()
