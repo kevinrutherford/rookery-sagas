@@ -36,9 +36,9 @@ export const fetchMissingFrontMatter = (logger: L.Logger): Saga => pipe(
   )),
   TE.chainW(updateWork(logger)),
   TE.mapBoth(
-    () => ({
-      message: 'Ouch!',
-      payload: {},
+    (err) => ({
+      message: JSON.stringify(err),
+      payload: { err },
     }),
     () => {},
   ),
