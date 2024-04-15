@@ -1,8 +1,11 @@
 import axios from 'axios'
 import axiosRetry, { exponentialDelay } from 'axios-retry'
+import { fetchWorksAwaitingFrontMatter } from './fetch-works-awaiting-front-matter'
+import { updateWork } from './update-work'
 import { Logger } from '../logger'
 
-export const instantiate = (logger: Logger): void => {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const instantiate = (logger: Logger) => {
   axiosRetry(axios, {
     retries: 3,
     retryCondition: () => true,
@@ -16,5 +19,12 @@ export const instantiate = (logger: Logger): void => {
       })
     },
   })
+
+  return {
+    fetchWorksAwaitingFrontMatter,
+    updateWork,
+  }
 }
+
+export type Api = ReturnType<typeof instantiate>
 

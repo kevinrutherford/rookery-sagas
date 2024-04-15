@@ -1,6 +1,6 @@
 import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
-import * as api from './api'
+import * as Api from './api'
 import { fetchCrossrefWork } from './crossref/fetch-crossref-work'
 import { fetchMissingFrontMatter } from './fetch-missing-front-matter'
 import { Saga } from './invoke'
@@ -12,7 +12,7 @@ const main = async (): Promise<void> => {
     colour: process.env.NODE_ENV !== 'production',
     level: process.env.LOG_LEVEL ?? 'debug',
   })
-  api.instantiate(logger)
+  const api = Api.instantiate(logger)
 
   const invoke = (saga: Saga) => async (): Promise<void> => {
     logger.info('fetchMissingFrontMatter starting')
@@ -27,7 +27,7 @@ const main = async (): Promise<void> => {
   }
 
   logger.info('Starting sagas')
-  setInterval(invoke(fetchMissingFrontMatter(fetchCrossrefWork)), 31 * 1000)
+  setInterval(invoke(fetchMissingFrontMatter(fetchCrossrefWork, api)), 31 * 1000)
 }
 
 main()
