@@ -73,10 +73,10 @@ const handleResponse = (
           },
         },
         upd(logger),
-        TE.mapLeft((err) => ({
-          message: JSON.stringify(err),
-          payload: { err },
-        })),
+        () => TE.left({
+          message: 'could not decode Crossref response',
+          payload: { error: fmr.details, doi: work.id },
+        }),
       )
   }
 }
