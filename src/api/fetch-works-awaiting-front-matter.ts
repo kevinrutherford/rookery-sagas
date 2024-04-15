@@ -6,24 +6,27 @@ import { formatValidationErrors } from 'io-ts-reporters'
 import { FatalError } from '../invoke'
 import { Work, worksResponse } from '../resources/work'
 
-export const fetchWorksAwaitingFrontMatter = (url: string): TE.TaskEither<FatalError, ReadonlyArray<Work>> => pipe(
-  TE.tryCatch(
-    async () => axios.get(url, {
-      headers: { 'Accept': 'application/json' },
-    }),
-    (error) => ({
-      message: 'failed to fetch works',
-      payload: { url, error },
-    }),
-  ),
-  TE.map((response) => response.data),
-  TE.chainEitherKW(flow(
-    worksResponse.decode,
-    E.mapLeft((errors) => ({
-      message: 'invalid response',
-      payload: { url, errors: formatValidationErrors(errors) },
-    })),
-  )),
-  TE.map((res) => res.data),
-)
+export const fetchWorksAwaitingFrontMatter = (): TE.TaskEither<FatalError, ReadonlyArray<Work>> => {
+  const url = 'http://views:44002/works?filter[crossrefStatus]=not-determined'
+  return pipe(
+    TE.tryCatch(
+      async () => axios.get(url, {
+        headers: { 'Accept': 'application/json' },
+      }),
+      (error) => ({
+        message: 'failed to fetch works',
+        payload: { url, error },
+      }),
+    ),
+    TE.map((response) => response.data),
+    TE.chainEitherKW(flow(
+      worksResponse.decode,
+      E.mapLeft((errors) => ({
+        message: 'invalid response',
+        payload: { url, errors: formatValidationErrors(errors) },
+      })),
+    )),
+    TE.map((res) => res.data),
+  )
+}
 

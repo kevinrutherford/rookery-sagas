@@ -33,8 +33,7 @@ const updateWork = (logger: L.Logger) => (work: Work): Saga => pipe(
 )
 
 export const fetchMissingFrontMatter = (logger: L.Logger): Saga => pipe(
-  'http://views:44002/works?filter[crossrefStatus]=not-determined',
-  api.fetchWorksAwaitingFrontMatter,
+  api.fetchWorksAwaitingFrontMatter(),
   TE.map(RA.head),
   TE.chain(O.match(
     () => TE.right(null),
