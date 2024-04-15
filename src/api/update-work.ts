@@ -4,7 +4,7 @@ import { pipe } from 'fp-ts/function'
 import * as L from '../logger'
 import { Work } from '../resources/work'
 
-export const updateWork = (logger: L.Logger) => (work: Work): TE.TaskEither<unknown, unknown> => {
+export const updateWork = (logger: L.Logger) => (work: Work): TE.TaskEither<unknown, null> => {
   const url = `http://commands:44001/works/${work.id}`
   return pipe(
     TE.tryCatch(
@@ -13,7 +13,10 @@ export const updateWork = (logger: L.Logger) => (work: Work): TE.TaskEither<unkn
       }),
       (error) => logger.error('failed to update work', { url, work, error }),
     ),
-    TE.map(() => logger.debug('work updated', { work: JSON.stringify(work) })),
+    TE.map(() => {
+      logger.debug('work updated', { work: JSON.stringify(work) })
+      return null
+    }),
   )
 }
 
