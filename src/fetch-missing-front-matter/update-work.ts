@@ -84,11 +84,7 @@ const handleResponse = (
 export const updateWork = (logger: L.Logger) => (work: Work): Saga => pipe(
   work,
   fetchCrossrefWork(logger),
-  TE.mapLeft(handleResponse(logger, api.updateWork, work)),
-  TE.chain(api.updateWork(logger)),
-  TE.mapLeft((err) => ({
-    message: JSON.stringify(err),
-    payload: { err },
-  })),
+  TE.rightTask,
+  TE.chain(handleResponse(logger, api.updateWork, work)),
 )
 
