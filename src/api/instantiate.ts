@@ -1,5 +1,6 @@
 import axios from 'axios'
 import axiosRetry, { exponentialDelay } from 'axios-retry'
+import { createComment } from './create-comment'
 import { fetchWorksAwaitingFrontMatter } from './fetch-works-awaiting-front-matter'
 import { updateWork } from './update-work'
 import { Logger } from '../logger'
@@ -8,7 +9,6 @@ import { Logger } from '../logger'
 export const instantiate = (logger: Logger) => {
   axiosRetry(axios, {
     retries: 3,
-    retryCondition: () => true,
     retryDelay: exponentialDelay,
     onRetry: (retryCount: number, error) => {
       logger.debug('Axios retry', {
@@ -21,6 +21,7 @@ export const instantiate = (logger: Logger) => {
   })
 
   return {
+    createComment,
     fetchWorksAwaitingFrontMatter,
     updateWork,
   }

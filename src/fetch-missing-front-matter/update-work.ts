@@ -31,6 +31,10 @@ const handleResponse = (work: Work, api: Api) => (fmr: FrontMatterResponse): TE.
           },
         },
         api.updateWork,
+        TE.chain(() => api.createComment({
+          entryId: 'nonsense',
+          content: 'I couldn\'t find this DOI on Crossref',
+        })),
       )
     case 'response-unavailable':
       return pipe(
