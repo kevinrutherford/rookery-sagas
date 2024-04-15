@@ -17,7 +17,7 @@ const main = async (): Promise<void> => {
       saga,
       TE.mapLeft((fe) => {
         logger.error(fe.message, fe.payload)
-        //process.exit(1)
+        process.exit(1)
       }),
     )()
     logger.info('fetchMissingFrontMatter finished')
