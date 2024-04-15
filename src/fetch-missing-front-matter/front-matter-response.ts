@@ -1,9 +1,10 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type FrontMatterFound = {
   type: 'found',
+  title: string,
+  abstract: string,
+  authors: Array<string>,
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type FrontMatterNotFound = {
   type: 'not-found',
 }
@@ -21,4 +22,6 @@ type FrontMatterInvalid = {
 export type FrontMatterResponse =
   | FrontMatterUnavailable
   | FrontMatterInvalid
+  | FrontMatterNotFound
+  | FrontMatterFound
 

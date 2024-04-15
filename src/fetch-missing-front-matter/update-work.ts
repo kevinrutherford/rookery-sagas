@@ -13,7 +13,55 @@ const handleResponse = (
   work: Work,
 ) => (fmr: FrontMatterResponse): TE.TaskEither<FatalError, null> => {
   switch (fmr.type) {
+    case 'found':
+      return pipe(
+        {
+          type: work.type,
+          id: work.id,
+          attributes: {
+            crossrefStatus: 'found',
+            title: fmr.title,
+            abstract: fmr.abstract,
+            authors: fmr.authors,
+          },
+        },
+        upd(logger),
+        TE.mapLeft((err) => ({
+          message: JSON.stringify(err),
+          payload: { err },
+        })),
+      )
+    case 'not-found':
+      return pipe(
+        {
+          type: work.type,
+          id: work.id,
+          attributes: {
+            crossrefStatus: 'not-found',
+          },
+        },
+        upd(logger),
+        TE.mapLeft((err) => ({
+          message: JSON.stringify(err),
+          payload: { err },
+        })),
+      )
     case 'response-unavailable':
+      return pipe(
+        {
+          type: work.type,
+          id: work.id,
+          attributes: {
+            crossrefStatus: 'not-determined',
+            reason: 'response-unavailable',
+          },
+        },
+        upd(logger),
+        TE.mapLeft((err) => ({
+          message: JSON.stringify(err),
+          payload: { err },
+        })),
+      )
     case 'response-invalid':
       return pipe(
         {
@@ -21,7 +69,7 @@ const handleResponse = (
           id: work.id,
           attributes: {
             crossrefStatus: 'not-determined',
-            reason: fmr.type,
+            reason: 'response-invalid',
           },
         },
         upd(logger),
