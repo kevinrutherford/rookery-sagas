@@ -2,8 +2,7 @@ import * as O from 'fp-ts/Option'
 import * as RA from 'fp-ts/ReadonlyArray'
 import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
-import { fetchWorks } from './fetch-works'
-import * as api from '../api-commands'
+import * as api from '../api'
 import { fetchCrossrefWork } from '../crossref/fetch-crossref-work'
 import { Saga } from '../invoke'
 import * as L from '../logger'
@@ -35,7 +34,7 @@ const updateWork = (logger: L.Logger) => (work: Work): Saga => pipe(
 
 export const fetchMissingFrontMatter = (logger: L.Logger): Saga => pipe(
   'http://views:44002/works?filter[crossrefStatus]=not-determined',
-  fetchWorks,
+  api.fetchWorksAwaitingFrontMatter,
   TE.map(RA.head),
   TE.chain(O.match(
     () => TE.right(null),

@@ -6,7 +6,7 @@ import { formatValidationErrors } from 'io-ts-reporters'
 import { FatalError } from '../invoke'
 import { Work, worksResponse } from '../resources/work'
 
-export const fetchWorks = (url: string): TE.TaskEither<FatalError, ReadonlyArray<Work>> => pipe(
+export const fetchWorksAwaitingFrontMatter = (url: string): TE.TaskEither<FatalError, ReadonlyArray<Work>> => pipe(
   TE.tryCatch(
     async () => axios.get(url, {
       headers: { 'Accept': 'application/json' },
