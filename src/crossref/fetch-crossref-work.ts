@@ -8,7 +8,6 @@ import * as t from 'io-ts'
 import { formatValidationErrors } from 'io-ts-reporters'
 import { FrontMatterResponse } from '../fetch-missing-front-matter/front-matter-response'
 import * as L from '../logger'
-import { Work } from '../resources/work'
 
 const crossrefResponse = t.type({
   message: t.type({
@@ -25,8 +24,8 @@ const isNotFound = (error: unknown) => (
   axios.isAxiosError(error) && error.response?.status !== undefined && [404, 410].includes(error.response?.status)
 )
 
-export const fetchCrossrefWork = (logger: L.Logger) => (work: Work): T.Task<FrontMatterResponse> => {
-  const url = `https://api.crossref.org/works/${work.id}`
+export const fetchCrossrefWork = (logger: L.Logger) => (doi: string): T.Task<FrontMatterResponse> => {
+  const url = `https://api.crossref.org/works/${doi}`
   return pipe(
     TE.tryCatch(
       async () => axios.get(url, {

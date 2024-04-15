@@ -82,7 +82,7 @@ const handleResponse = (
 }
 
 export const updateWork = (logger: L.Logger) => (work: Work): Saga => pipe(
-  work,
+  work.id,
   fetchCrossrefWork(logger),
   TE.rightTask,
   TE.chain(handleResponse(logger, api.updateWork, work)),
