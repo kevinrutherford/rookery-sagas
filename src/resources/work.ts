@@ -1,4 +1,5 @@
 import * as t from 'io-ts'
+import * as tt from 'io-ts-types'
 
 const notDetermined = t.type({
   crossrefStatus: t.literal('not-determined'),
@@ -16,17 +17,30 @@ const found = t.type({
   authors: t.array(t.string),
 })
 
-const work = t.type({
+const frontMatter = t.union([notDetermined, notFound, found])
+
+const unresolvedWork = t.type({
   type: t.literal('work'),
   id: t.string,
-  attributes: t.union([notDetermined, notFound, found]),
+  attributes: t.intersection([
+    t.interface({ updatedAt: tt.DateFromISOString }),
+    notDetermined,
+  ]),
 })
 
 export const worksResponse = t.type({
-  data: t.array(work),
+  data: t.array(unresolvedWork),
 })
 
 type WorkResponse = t.TypeOf<typeof worksResponse>
 
 export type Work = WorkResponse['data'][number]
+
+type FrontMatter = t.TypeOf<typeof frontMatter>
+
+export type UpdateWorkCommand = {
+  type: Work['type'],
+  id: Work['id'],
+  attributes: FrontMatter,
+}
 
