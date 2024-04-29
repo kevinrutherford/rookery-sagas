@@ -6,7 +6,7 @@ import { updateWork } from './update-work'
 import { Logger } from '../logger'
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const instantiate = (logger: Logger) => {
+export const instantiate = (logger: Logger, authToken: string) => {
   axiosRetry(axios, {
     retries: 3,
     retryDelay: exponentialDelay,
@@ -23,7 +23,7 @@ export const instantiate = (logger: Logger) => {
   return {
     createComment,
     fetchWorksAwaitingFrontMatter,
-    updateWork,
+    updateWork: updateWork(authToken),
   }
 }
 
