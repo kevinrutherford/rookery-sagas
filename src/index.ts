@@ -20,6 +20,7 @@ const main = async (): Promise<void> => {
       saga,
       TE.mapLeft((fe) => {
         logger.error(fe.message, fe.payload)
+        logger.info('Terminating all sagas')
         process.exit(1)
       }),
     )()
