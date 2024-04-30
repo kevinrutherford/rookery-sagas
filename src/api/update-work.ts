@@ -13,7 +13,7 @@ export const updateWork = (headers: ApiHeaders) => (cmd: UpdateWorkCommand): TE.
       async () => axios.patch(url, { data: cmd }, { headers }),
       (error) => ({
         message: 'failed to update work',
-        payload: { url, cmd, error },
+        payload: { url, ...cmd, error },
       }),
     ),
     TE.map(() => null),
