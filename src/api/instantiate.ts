@@ -20,10 +20,16 @@ export const instantiate = (logger: Logger, authToken: string) => {
     },
   })
 
+  const headers = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${authToken}`,
+  }
+
   return {
     createComment,
     fetchWorksAwaitingFrontMatter,
-    updateWork: updateWork(authToken),
+    updateWork: updateWork(headers),
   }
 }
 
