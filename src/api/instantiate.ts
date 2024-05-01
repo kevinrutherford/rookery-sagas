@@ -27,8 +27,8 @@ export const instantiate = (logger: Logger, authToken: string) => {
   }
 
   return {
-    createComment,
-    fetchWorksAwaitingFrontMatter,
+    createComment: createComment(headers),
+    fetchWorksAwaitingFrontMatter: fetchWorksAwaitingFrontMatter(headers),
     updateWork: updateWork(headers),
   }
 }
