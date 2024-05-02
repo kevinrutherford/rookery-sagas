@@ -12,7 +12,7 @@ const main = async (): Promise<void> => {
     colour: process.env.NODE_ENV !== 'production',
     level: process.env.LOG_LEVEL ?? 'debug',
   })
-  const api = Api.instantiate(logger, 'dummy-token')
+  const api = Api.instantiate(logger, process.env)
 
   const invoke = (saga: Saga) => async (): Promise<void> => {
     logger.info('fetchMissingFrontMatter starting')
