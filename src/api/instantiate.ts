@@ -9,15 +9,15 @@ import { fetchWorksAwaitingFrontMatter } from './fetch-works-awaiting-front-matt
 import { updateWork } from './update-work'
 import { Logger } from '../logger'
 
-const configCodec = t.type({
+const configuration = t.type({
   DEVELOPMENT_BEARER_TOKEN: t.string,
 })
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const instantiate = (logger: Logger, config: unknown) => {
-  const cf = pipe(
-    config,
-    configCodec.decode,
+export const instantiate = (logger: Logger, configVariables: unknown) => {
+  const config = pipe(
+    configVariables,
+    configuration.decode,
     E.getOrElseW((errors) => {
       logger.error('Invalid configuration', { errors: formatValidationErrors(errors) })
       throw new Error('Incorrect configuration provided')
@@ -40,7 +40,7 @@ export const instantiate = (logger: Logger, config: unknown) => {
   const headers = {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${cf.DEVELOPMENT_BEARER_TOKEN}`,
+    'Authorization': `Bearer ${config.DEVELOPMENT_BEARER_TOKEN}`,
   }
 
   return {
