@@ -46,6 +46,7 @@ release: $(MK_IMAGE) git-status-clean
 	docker tag $(IMAGE):latest $(IMAGE):$(IMAGE_VERSION)
 	docker push $(IMAGE):$(IMAGE_VERSION)
 	docker push $(IMAGE):latest
+	git tag $(IMAGE_VERSION)
 
 git-status-clean:
 	@test -z "$$(git status --porcelain)"
