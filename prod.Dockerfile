@@ -1,5 +1,5 @@
 FROM node:18.18-alpine AS node
-ENV NODE_OPTIONS --unhandled-rejections=strict --enable-source-maps
+ENV NODE_OPTIONS="--unhandled-rejections=strict --enable-source-maps"
 WORKDIR /app
 
 COPY .npmrc \
