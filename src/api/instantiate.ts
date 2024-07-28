@@ -10,7 +10,7 @@ import { updateWork } from './update-work'
 import { Logger } from '../logger'
 
 const configuration = t.type({
-  DEVELOPMENT_BEARER_TOKEN: t.string,
+  USER_CRB_ID: t.string,
 })
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -40,7 +40,7 @@ export const instantiate = (logger: Logger, configVariables: unknown) => {
   const headers = {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${config.DEVELOPMENT_BEARER_TOKEN}`,
+    'Authorization': `Bearer ${config.USER_CRB_ID}`,
   }
 
   return {
