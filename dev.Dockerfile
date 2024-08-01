@@ -1,4 +1,4 @@
-FROM node:18-alpine AS node
+FROM node:22-alpine AS node
 ENV NODE_OPTIONS="--unhandled-rejections=strict --enable-source-maps"
 
 RUN mkdir -p /srv/app
