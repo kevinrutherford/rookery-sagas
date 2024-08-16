@@ -5,6 +5,7 @@ import { fetchCrossrefWork } from './crossref/fetch-crossref-work'
 import { fetchMissingFrontMatter } from './fetch-missing-front-matter'
 import { Saga } from './invoke'
 import * as L from './logger'
+import * as Outbox from './outbox'
 
 const main = async (): Promise<void> => {
   const logger = L.create({
@@ -26,6 +27,9 @@ const main = async (): Promise<void> => {
     )()
     logger.info('fetchMissingFrontMatter finished')
   }
+
+  logger.info('Starting outbox')
+  Outbox.start()
 
   logger.info('Starting sagas')
   setInterval(invoke(fetchMissingFrontMatter(fetchCrossrefWork, api)), 31 * 1000)
