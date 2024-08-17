@@ -42,3 +42,8 @@ export const domainEvent = t.union([
   doiEnteredEvent,
 ])
 
+export type DomainEvent = {
+  id: string,
+  created: Date,
+} & t.TypeOf<typeof domainEvent>
+

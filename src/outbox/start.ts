@@ -1,14 +1,25 @@
 import { END, EventStoreDBClient, excludeSystemEvents } from '@eventstore/db-client'
 import * as E from 'fp-ts/Either'
-import { domainEvent } from './domain-event'
+import { DomainEvent, domainEvent } from './domain-event'
 import { Logger } from '../logger'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const propagate = (logger: Logger) => (event: unknown): void => {
-  const e = domainEvent.decode(event)
+const followedActors = [
+  process.env.USER_A1_ID ?? 'not-a-user',
+  process.env.USER_A2_ID ?? 'not-a-user',
+  process.env.USER_A3_ID ?? 'not-a-user',
+]
+
+const isShareable = (event: DomainEvent): boolean => followedActors.includes(event.data.actorId)
+
+const propagate = (logger: Logger) => (esEvent: unknown): void => {
+  const e = domainEvent.decode(esEvent)
   if (E.isLeft(e))
     return
-  logger.debug('Event received', { type: e.right.type })
+  const event = e.right
+  logger.debug('Event received', { type: event.type })
+  if (!isShareable(event))
+    return
+  logger.debug('Shareable event received', { type: event.type })
 }
 
 export const start = (logger: Logger): void => {
