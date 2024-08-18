@@ -26,6 +26,8 @@ const commentCreatedEvent = t.intersection([esEventBase, t.type({
   }),
 })])
 
+export type CommentCreated = t.TypeOf<typeof commentCreatedEvent>
+
 const doiEnteredEvent = t.intersection([esEventBase, t.type({
   type: t.literal('discussion-started'),
   data: t.type({
