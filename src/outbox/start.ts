@@ -9,6 +9,7 @@ import { CommentCreated, DomainEvent, domainEvent } from './domain-event'
 import { Logger } from '../logger'
 
 const config = t.type({
+  ROOKERY_HOSTNAME: t.string,
   USER_A1_ID: t.string,
   USER_A2_ID: t.string,
   USER_A3_ID: t.string,
@@ -27,7 +28,7 @@ const share = async (env: Config, logger: Logger, event: CommentCreated) => {
     '@context': ['https://www.w3.org/ns/activitystreams'],
     type: 'Create',
     actor: {
-      id: event.data.actorId,
+      id: `${env.ROOKERY_HOSTNAME}/members/${event.data.actorId}`,
     },
     published: event.created, // SMELL -- potentially the wrong date
     object: {
