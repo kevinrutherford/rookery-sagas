@@ -44,12 +44,10 @@ export const fetchCrossrefWork: FetchFrontMatter = (doi) => {
     TE.map((res) => res.data),
     TE.chainEitherKW(flow(
       crossrefResponse.decode,
-      E.mapLeft((errors) => {
-        return ({
-          type: 'response-invalid' as const,
-          details: formatValidationErrors(errors).join('\n'),
-        } satisfies FrontMatterResponse)
-      }),
+      E.mapLeft((errors) => ({
+        type: 'response-invalid' as const,
+        details: formatValidationErrors(errors).join('\n'),
+      } satisfies FrontMatterResponse)),
     )),
     TE.map((response) => ({
       type: 'found',

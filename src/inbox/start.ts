@@ -29,12 +29,8 @@ const ensureLocalMemberNotCachedAlready = (env: Config) =>
       `/members/${encodeURIComponent(id)}`,
       localInstanceRead(headers),
       TE.match(
-        () => {
-          return E.right(id)
-        },
-        () => {
-          return E.left('')
-        },
+        () => E.right(id),
+        () => E.left(''),
       ),
     )
   }
@@ -43,13 +39,9 @@ type Member = {
   id: string,
 }
 
-const fetchRemoteMember = (id: string): TE.TaskEither<unknown, Member> => {
-  return TE.left('')
-}
+const fetchRemoteMember = (id: string): TE.TaskEither<unknown, Member> => TE.left('')
 
-const cacheMemberLocally = (member: Member): TE.TaskEither<unknown, void> => {
-  return TE.left('')
-}
+const cacheMemberLocally = (member: Member): TE.TaskEither<unknown, void> => TE.left('')
 
 const fetchActor = async (env: Config, event: InboxCommentCreatedEvent) => {
   await pipe(

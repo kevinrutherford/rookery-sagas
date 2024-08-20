@@ -21,6 +21,7 @@ module.exports = {
   ],
   root: true,
   rules: {
+    'arrow-body-style': ['error', 'as-needed'],
     'arrow-parens': 'off',
     'comma-dangle': ['error', 'always-multiline'],
     curly: ['error', 'multi-or-nest'],
