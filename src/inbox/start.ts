@@ -42,7 +42,6 @@ const ensureLocalMemberNotCachedAlready = (env: Config, logger: Logger) =>
           return E.left('')
         },
       ),
-      foo => foo,
     )
   }
 
