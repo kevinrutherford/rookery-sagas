@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { END, EventStoreDBClient, excludeSystemEvents } from '@eventstore/db-client'
 import * as E from 'fp-ts/Either'
+import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
 import * as t from 'io-ts'
 import { formatValidationErrors } from 'io-ts-reporters'
@@ -16,8 +18,30 @@ const config = t.type({
 
 type Config = t.TypeOf<typeof config>
 
+const ensureLocalMemberNotCachedAlready = (id: string): TE.TaskEither<unknown, string> => {
+  return TE.left('')
+}
+
+type Member = {
+  id: string,
+}
+
+const fetchRemoteMember = (id: string): TE.TaskEither<unknown, Member> => {
+  return TE.left('')
+}
+
+const cacheMemberLocally = (member: Member): TE.TaskEither<unknown, void> => {
+  return TE.left('')
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const fetchActor = async (env: Config, logger: Logger, event: InboxCommentCreatedEvent) => {
+  await pipe(
+    event.data.actorId,
+    ensureLocalMemberNotCachedAlready,
+    TE.chain(fetchRemoteMember),
+    TE.chain(cacheMemberLocally),
+  )()
 }
 
 const propagate = (env: Config, logger: Logger) => (esEvent: unknown): void => {
