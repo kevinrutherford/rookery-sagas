@@ -9,8 +9,8 @@ import { Work, worksResponse } from '../resources/work'
 
 type Fetcher = (headers: ApiHeaders) => () => TE.TaskEither<FatalError, ReadonlyArray<Work>>
 
-export const fetchWorksAwaitingFrontMatter: Fetcher = (headers) => () => {
-  const url = 'http://views:44002/works?filter[crossrefStatus]=not-determined'
+const localInstanceRead = (headers: ApiHeaders) => (path: string): TE.TaskEither<FatalError, unknown> => {
+  const url = `http://views:44002${path}`
   return pipe(
     TE.tryCatch(
       async () => axios.get(url, { headers }),
@@ -20,6 +20,14 @@ export const fetchWorksAwaitingFrontMatter: Fetcher = (headers) => () => {
       }),
     ),
     TE.map((response) => response.data),
+  )
+}
+
+export const fetchWorksAwaitingFrontMatter: Fetcher = (headers) => () => {
+  const url = 'http://views:44002/works?filter[crossrefStatus]=not-determined'
+  return pipe(
+    '/works?filter[crossrefStatus]=not-determined',
+    localInstanceRead(headers),
     TE.chainEitherKW(flow(
       worksResponse.decode,
       E.mapLeft((errors) => ({
