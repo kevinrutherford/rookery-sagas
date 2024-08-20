@@ -1,7 +1,8 @@
 import axios from 'axios'
 import * as E from 'fp-ts/Either'
 import * as TE from 'fp-ts/TaskEither'
-import { flow, pipe } from 'fp-ts/function'
+import { pipe } from 'fp-ts/function'
+import * as t from 'io-ts'
 import { formatValidationErrors } from 'io-ts-reporters'
 import { ApiHeaders } from './api-headers'
 import { FatalError } from '../invoke'
@@ -23,18 +24,20 @@ const localInstanceRead = (headers: ApiHeaders) => (path: string): TE.TaskEither
   )
 }
 
+const parseAs = <R>(codec: t.Decoder<unknown, R>) => (response: unknown): E.Either<FatalError, R> => pipe(
+  response,
+  codec.decode,
+  E.mapLeft((errors) => ({
+    message: 'invalid response',
+    payload: { errors: formatValidationErrors(errors) },
+  })),
+)
+
 export const fetchWorksAwaitingFrontMatter: Fetcher = (headers) => () => {
-  const url = 'http://views:44002/works?filter[crossrefStatus]=not-determined'
   return pipe(
     '/works?filter[crossrefStatus]=not-determined',
     localInstanceRead(headers),
-    TE.chainEitherKW(flow(
-      worksResponse.decode,
-      E.mapLeft((errors) => ({
-        message: 'invalid response',
-        payload: { url, errors: formatValidationErrors(errors) },
-      })),
-    )),
+    TE.chainEitherK(parseAs(worksResponse)),
     TE.map((res) => res.data),
   )
 }
