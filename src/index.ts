@@ -3,6 +3,7 @@ import { pipe } from 'fp-ts/function'
 import * as Api from './api'
 import { fetchCrossrefWork } from './crossref/fetch-crossref-work'
 import { fetchMissingFrontMatter } from './fetch-missing-front-matter'
+import * as Inbox from './inbox'
 import { Saga } from './invoke'
 import * as L from './logger'
 import * as Outbox from './outbox'
@@ -25,6 +26,9 @@ const main = async (): Promise<void> => {
     )()
     logger.info('fetchMissingFrontMatter finished')
   }
+
+  logger.info('Starting inbox')
+  Inbox.start(process.env, logger)
 
   logger.info('Starting outbox')
   Outbox.start(process.env, logger)
