@@ -25,7 +25,7 @@ const propagate = (env: Config, logger: Logger) => (esEvent: unknown): void => {
   if (E.isLeft(e))
     return
   const event = e.right
-  logger.debug('Inbox event received', { type: event.type })
+  logger.debug('Inbox: Event received', { type: event.type })
   if (event.type === 'inbox:comment-created')
     fetchActor(env, logger, event)
 }
@@ -35,7 +35,7 @@ export const start = (env: unknown, logger: Logger): void => {
     env,
     config.decode,
     E.getOrElseW((errors) => {
-      logger.error('Missing or incorrect config', {
+      logger.error('Inbox: Missing or incorrect config', {
         errors: formatValidationErrors(errors),
       })
       throw new Error('Incorrect config')

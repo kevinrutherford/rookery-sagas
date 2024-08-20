@@ -8,6 +8,18 @@ import { formatValidationErrors } from 'io-ts-reporters'
 import { CommentCreated, DomainEvent, domainEvent } from './domain-event'
 import { Logger } from '../logger'
 
+const logAxiosError = (logger: Logger, url: string) => (error: unknown): void => {
+  const logPayload = (axios.isAxiosError(error)) ? ({
+    error,
+    url,
+    responseBody: error.response?.data,
+  }) : ({
+    error,
+    url,
+  })
+  logger.error('Outbox: Request failed', logPayload)
+}
+
 const config = t.type({
   ROOKERY_HOSTNAME: t.string,
   USER_A1_ID: t.string,
@@ -43,17 +55,8 @@ const share = async (env: Config, logger: Logger, event: CommentCreated) => {
   await pipe(
     TE.tryCatch(
       async () => axios.post(url, comment, { headers }),
-      (error) => ({
-        message: 'failed to create comment',
-        payload: { url, comment, error },
-      }),
+      logAxiosError(logger, url),
     ),
-    TE.map((error) => {
-      logger.error('Failed to write to inbox', {
-        error: error.toString(),
-        url,
-      })
-    }),
   )()
 }
 
@@ -64,12 +67,12 @@ const propagate = (env: Config, logger: Logger) => (esEvent: unknown): void => {
   if (E.isLeft(e))
     return
   const event = e.right
-  logger.debug('Event received', { type: event.type })
+  logger.debug('Outbox: Event received', { type: event.type })
   if (event.type === 'comment-created')
     share(env, logger, event)
   if (!isShareable(env)(event))
     return
-  logger.debug('Shareable event received', { type: event.type })
+  logger.debug('Outbox: Shareable event received', { type: event.type })
 }
 
 export const start = (env: unknown, logger: Logger): void => {
@@ -77,7 +80,7 @@ export const start = (env: unknown, logger: Logger): void => {
     env,
     config.decode,
     E.getOrElseW((errors) => {
-      logger.error('Missing or incorrect config', {
+      logger.error('Outbox: Missing or incorrect config', {
         errors: formatValidationErrors(errors),
       })
       throw new Error('Incorrect config')
