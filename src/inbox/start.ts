@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { END, EventStoreDBClient, excludeSystemEvents } from '@eventstore/db-client'
+import axios from 'axios'
 import * as E from 'fp-ts/Either'
 import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
@@ -18,9 +19,32 @@ const config = t.type({
 
 type Config = t.TypeOf<typeof config>
 
-const ensureLocalMemberNotCachedAlready = (id: string): TE.TaskEither<unknown, string> => {
-  return TE.left('')
-}
+const ensureLocalMemberNotCachedAlready = (env: Config, logger: Logger) =>
+  (id: string): TE.TaskEither<unknown, string> => {
+    const headers = {
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${env.USER_CRB_ID}`,
+    }
+    return pipe(
+      TE.tryCatch(
+        async () => axios.get(`http://views:44002/members/${encodeURIComponent(id)}`, { headers }),
+        (e) => {
+          logger.error('Inbox: Could not contact readmodel', { e })
+        },
+      ),
+      TE.match(
+        () => {
+          logger.info(`Actor ${id} not found locally`)
+          return E.right(id)
+        },
+        () => {
+          logger.info(`Actor ${id} found locally!`)
+          return E.left('')
+        },
+      ),
+      foo => foo,
+    )
+  }
 
 type Member = {
   id: string,
@@ -34,11 +58,10 @@ const cacheMemberLocally = (member: Member): TE.TaskEither<unknown, void> => {
   return TE.left('')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const fetchActor = async (env: Config, logger: Logger, event: InboxCommentCreatedEvent) => {
   await pipe(
     event.data.actorId,
-    ensureLocalMemberNotCachedAlready,
+    ensureLocalMemberNotCachedAlready(env, logger),
     TE.chain(fetchRemoteMember),
     TE.chain(cacheMemberLocally),
   )()
