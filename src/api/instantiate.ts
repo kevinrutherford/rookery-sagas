@@ -6,6 +6,7 @@ import * as t from 'io-ts'
 import { formatValidationErrors } from 'io-ts-reporters'
 import { createComment } from './create-comment'
 import { fetchWorksAwaitingFrontMatter } from './fetch-works-awaiting-front-matter'
+import { localInstanceRead } from './local-instance-read'
 import { updateWork } from './update-work'
 import { Logger } from '../logger'
 
@@ -46,6 +47,7 @@ export const instantiate = (logger: Logger, configVariables: unknown) => {
   return {
     createComment: createComment(headers),
     fetchWorksAwaitingFrontMatter: fetchWorksAwaitingFrontMatter(headers),
+    read: localInstanceRead(headers),
     updateWork: updateWork(headers),
   }
 }

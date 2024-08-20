@@ -28,7 +28,7 @@ const main = async (): Promise<void> => {
   }
 
   logger.info('Starting inbox')
-  Inbox.start(process.env, logger)
+  Inbox.start(logger, api)
 
   logger.info('Starting outbox')
   Outbox.start(process.env, logger)
