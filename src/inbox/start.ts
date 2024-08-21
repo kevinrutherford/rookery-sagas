@@ -17,16 +17,13 @@ const ensureLocalMemberNotCachedAlready = (api: Api) => (id: string): TE.TaskEit
 )
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const fetchRemoteMember = (id: string): TE.TaskEither<unknown, Member> => TE.left('')
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const cacheMemberLocally = (member: Member): TE.TaskEither<unknown, void> => TE.left('')
 
 const fetchActor = async (api: Api, event: InboxCommentCreatedEvent) => {
   await pipe(
     event.data.actorId,
     ensureLocalMemberNotCachedAlready(api),
-    TE.chain(fetchRemoteMember),
+    TE.chainW(api.fetchRemoteMember),
     TE.chain(cacheMemberLocally),
   )()
 }

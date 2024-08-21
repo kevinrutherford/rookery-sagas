@@ -5,7 +5,7 @@ import { pipe } from 'fp-ts/function'
 import * as t from 'io-ts'
 import { formatValidationErrors } from 'io-ts-reporters'
 import { createComment } from './create-comment'
-import { fetchMember } from './fetch-member'
+import { fetchMember, fetchRemoteMember } from './fetch-member'
 import { fetchWorksAwaitingFrontMatter } from './fetch-works-awaiting-front-matter'
 import { localInstanceRead } from './local-instance-read'
 import { updateWork } from './update-work'
@@ -48,6 +48,7 @@ export const instantiate = (logger: Logger, configVariables: unknown) => {
   return {
     createComment: createComment(headers),
     fetchMember: fetchMember(headers),
+    fetchRemoteMember: fetchRemoteMember(headers),
     fetchWorksAwaitingFrontMatter: fetchWorksAwaitingFrontMatter(headers),
     read: localInstanceRead(headers),
     updateWork: updateWork(headers),
