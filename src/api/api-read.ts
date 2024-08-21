@@ -8,7 +8,7 @@ export const apiRead = (headers: ApiHeaders) => (url: string): TE.TaskEither<Fat
   TE.tryCatch(
     async () => axios.get(url, { headers }),
     (error) => ({
-      message: 'failed to fetch works',
+      message: 'failed to fetch',
       payload: { url, error },
     }),
   ),
