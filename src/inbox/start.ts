@@ -1,22 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { END, EventStoreDBClient, excludeSystemEvents } from '@eventstore/db-client'
 import * as E from 'fp-ts/Either'
 import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
-import * as t from 'io-ts'
 import { inboxCommentCreatedEvent, InboxCommentCreatedEvent } from './domain-event'
 import { Api } from '../api'
 import { Logger } from '../logger'
-
-const config = t.type({
-  ROOKERY_HOSTNAME: t.string,
-  USER_A1_ID: t.string,
-  USER_A2_ID: t.string,
-  USER_A3_ID: t.string,
-  USER_CRB_ID: t.string,
-})
-
-type Config = t.TypeOf<typeof config>
 
 const ensureLocalMemberNotCachedAlready = (api: Api) => (id: string): TE.TaskEither<unknown, string> => pipe(
   `/members/${encodeURIComponent(id)}`,
@@ -31,8 +19,10 @@ type Member = {
   id: string,
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const fetchRemoteMember = (id: string): TE.TaskEither<unknown, Member> => TE.left('')
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const cacheMemberLocally = (member: Member): TE.TaskEither<unknown, void> => TE.left('')
 
 const fetchActor = async (api: Api, event: InboxCommentCreatedEvent) => {
