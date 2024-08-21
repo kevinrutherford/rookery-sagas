@@ -10,7 +10,7 @@ type Comment = {
 }
 
 export const createComment = (headers: ApiHeaders) => (comment: Comment): TE.TaskEither<FatalError, null> => {
-  const url = 'http://commands:44001/comments'
+  const url = 'http://commands:44001/comments' // SMELL -- duplicate knowledge of local ports
   return pipe(
     TE.tryCatch(
       async () => axios.post(url, { data: comment }, { headers }),

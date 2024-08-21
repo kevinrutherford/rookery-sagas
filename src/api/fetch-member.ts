@@ -20,6 +20,10 @@ export const fetchRemoteMember: Fetcher = (headers) => (id) => pipe(
   id,
   apiRead(headers),
   TE.chainEitherK(parseAs(memberResponse)),
-  TE.map((res) => res.data),
+  TE.map((response) => response.data),
+  TE.map((member) => ({
+    ...member,
+    id,
+  })),
 )
 

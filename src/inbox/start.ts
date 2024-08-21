@@ -5,7 +5,6 @@ import { pipe } from 'fp-ts/function'
 import { inboxCommentCreatedEvent, InboxCommentCreatedEvent } from './domain-event'
 import { Api } from '../api'
 import { Logger } from '../logger'
-import { Member } from '../resources/member'
 
 const ensureLocalMemberNotCachedAlready = (api: Api) => (id: string): TE.TaskEither<unknown, string> => pipe(
   id,
@@ -16,15 +15,12 @@ const ensureLocalMemberNotCachedAlready = (api: Api) => (id: string): TE.TaskEit
   ),
 )
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const cacheMemberLocally = (member: Member): TE.TaskEither<unknown, void> => TE.left('')
-
 const fetchActor = async (api: Api, event: InboxCommentCreatedEvent) => {
   await pipe(
     event.data.actorId,
     ensureLocalMemberNotCachedAlready(api),
     TE.chainW(api.fetchRemoteMember),
-    TE.chain(cacheMemberLocally),
+    TE.chainW(api.cacheMember),
   )()
 }
 

@@ -4,6 +4,7 @@ import * as E from 'fp-ts/Either'
 import { pipe } from 'fp-ts/function'
 import * as t from 'io-ts'
 import { formatValidationErrors } from 'io-ts-reporters'
+import { cacheMember } from './cache-member'
 import { createComment } from './create-comment'
 import { fetchMember, fetchRemoteMember } from './fetch-member'
 import { fetchWorksAwaitingFrontMatter } from './fetch-works-awaiting-front-matter'
@@ -46,6 +47,7 @@ export const instantiate = (logger: Logger, configVariables: unknown) => {
   }
 
   return {
+    cacheMember: cacheMember(headers),
     createComment: createComment(headers),
     fetchMember: fetchMember(headers),
     fetchRemoteMember: fetchRemoteMember(headers),
