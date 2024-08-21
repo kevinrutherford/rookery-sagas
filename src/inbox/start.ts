@@ -5,19 +5,16 @@ import { pipe } from 'fp-ts/function'
 import { inboxCommentCreatedEvent, InboxCommentCreatedEvent } from './domain-event'
 import { Api } from '../api'
 import { Logger } from '../logger'
+import { Member } from '../resources/member'
 
 const ensureLocalMemberNotCachedAlready = (api: Api) => (id: string): TE.TaskEither<unknown, string> => pipe(
-  `/members/${encodeURIComponent(id)}`,
-  api.read,
+  id,
+  api.fetchMember,
   TE.match(
     () => E.right(id),
     () => E.left(''),
   ),
 )
-
-type Member = {
-  id: string,
-}
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const fetchRemoteMember = (id: string): TE.TaskEither<unknown, Member> => TE.left('')
