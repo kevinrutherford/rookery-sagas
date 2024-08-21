@@ -40,7 +40,7 @@ const share = async (env: Config, logger: Logger, event: CommentCreated) => {
     '@context': ['https://www.w3.org/ns/activitystreams'],
     type: 'Create',
     actor: {
-      id: `${env.ROOKERY_HOSTNAME}/members/${event.data.actorId}`,
+      id: `${env.ROOKERY_HOSTNAME}/api/members/${event.data.actorId}`,
     },
     published: event.created, // SMELL -- potentially the wrong date
     object: {
@@ -68,11 +68,11 @@ const propagate = (env: Config, logger: Logger) => (esEvent: unknown): void => {
     return
   const event = e.right
   logger.debug('Outbox: Event received', { type: event.type })
-  if (event.type === 'comment-created')
-    share(env, logger, event)
   if (!isShareable(env)(event))
     return
   logger.debug('Outbox: Shareable event received', { type: event.type })
+  if (event.type === 'comment-created')
+    share(env, logger, event)
 }
 
 export const start = (env: unknown, logger: Logger): void => {
