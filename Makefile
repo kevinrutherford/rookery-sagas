@@ -3,7 +3,6 @@ GRAPHS_DIR      := graphs
 IMAGE           := kevinrutherford/rookery-sagas
 IMAGE_VERSION := $(shell git describe --tags)
 MK_IMAGE  := .mk-built
-MK_PUBLISHED    := .mk-published
 MK_COMPILED     := .mk-compiled
 MK_LINTED       := .mk-linted
 SOURCES         := $(shell find src -type f)
@@ -69,9 +68,10 @@ $(GRAPHS_DIR):
 # Utilities - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 clean:
-	rm -f $(MK_IMAGE) $(MK_PUBLISHED) $(MK_LINTED)
+	rm -f $(MK_COMPILED) $(MK_LINTED)
 	rm -rf $(GRAPHS_DIR)
 
 clobber: clean
+	rm -f $(MK_IMAGE)
 	rm -rf node_modules
 
