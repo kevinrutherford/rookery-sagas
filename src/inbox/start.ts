@@ -15,23 +15,21 @@ const ensureLocalMemberNotCachedAlready = (api: Api) => (id: string): TE.TaskEit
   ),
 )
 
-const fetchActor = async (api: Api, event: InboxCommentCreatedEvent) => {
-  await pipe(
-    event.data.actorId,
-    ensureLocalMemberNotCachedAlready(api),
-    TE.chainW(api.fetchRemoteMember),
-    TE.chainW(api.cacheMember),
-  )()
-}
+const fetchAndCacheActor = (api: Api, event: InboxCommentCreatedEvent) => pipe(
+  event.data.actorId,
+  ensureLocalMemberNotCachedAlready(api),
+  TE.chainW(api.fetchRemoteMember),
+  TE.chainW(api.cacheMember),
+)
 
-const propagate = (logger: Logger, api: Api) => (esEvent: unknown): void => {
+const propagate = (logger: Logger, api: Api) => async (esEvent: unknown): Promise<void> => {
   const e = inboxCommentCreatedEvent.decode(esEvent)
   if (E.isLeft(e))
     return
   const event = e.right
   logger.debug('Inbox: Event received', { type: event.type })
   if (event.type === 'inbox:comment-created')
-    fetchActor(api, event)
+    await fetchAndCacheActor(api, event)()
 }
 
 export const start = (logger: Logger, api: Api): void => {
