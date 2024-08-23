@@ -1,4 +1,5 @@
 import { END, EventStoreDBClient, excludeSystemEvents } from '@eventstore/db-client'
+import { sequenceS } from 'fp-ts/Apply'
 import * as E from 'fp-ts/Either'
 import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
@@ -22,14 +23,24 @@ const fetchAndCacheActor = (api: Api, event: InboxCommentCreatedEvent) => pipe(
   TE.chainW(api.cacheMember),
 )
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const fetchAndCacheDiscussion = (api: Api, event: InboxCommentCreatedEvent) => TE.left('')
+
 const propagate = (logger: Logger, api: Api) => async (esEvent: unknown): Promise<void> => {
   const e = inboxCommentCreatedEvent.decode(esEvent)
   if (E.isLeft(e))
     return
   const event = e.right
   logger.debug('Inbox: Event received', { type: event.type })
-  if (event.type === 'inbox:comment-created')
-    await fetchAndCacheActor(api, event)()
+  if (event.type === 'inbox:comment-created') {
+    await pipe(
+      {
+        actor: fetchAndCacheActor(api, event),
+        discussion: fetchAndCacheDiscussion(api, event),
+      },
+      sequenceS(TE.ApplyPar),
+    )()
+  }
 }
 
 export const start = (logger: Logger, api: Api): void => {
