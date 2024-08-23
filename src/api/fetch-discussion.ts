@@ -10,7 +10,7 @@ import { Discussion, discussionResponse } from '../resources/discussion'
 type Fetcher = (headers: ApiHeaders) => (id: string) => TE.TaskEither<FatalError, Discussion>
 
 export const fetchDiscussion: Fetcher = (headers) => (id) => pipe(
-  `/members/${encodeURIComponent(id)}`,
+  `/discussions/${encodeURIComponent(id)}`,
   localInstanceRead(headers),
   TE.chainEitherK(parseAs(discussionResponse)),
   TE.map((res) => res.data),
