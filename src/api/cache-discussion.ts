@@ -11,7 +11,7 @@ export const cacheDiscussion = (headers: ApiHeaders) => (discussion: Discussion)
     TE.tryCatch(
       async () => axios.post(url, { data: discussion }, { headers }),
       (error) => ({
-        message: 'failed to cache member',
+        message: 'failed to cache discussion',
         payload: { url, discussion, error },
       }),
     ),
