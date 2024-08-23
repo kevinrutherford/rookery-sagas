@@ -7,6 +7,15 @@ import { inboxCommentCreatedEvent, InboxCommentCreatedEvent } from './domain-eve
 import { Api } from '../api'
 import { Logger } from '../logger'
 
+const ensureLocalDiscussionNotCachedAlready = (api: Api) => (id: string): TE.TaskEither<unknown, string> => pipe(
+  id,
+  api.fetchDiscussion,
+  TE.match(
+    () => E.right(id),
+    () => E.left(''),
+  ),
+)
+
 const ensureLocalMemberNotCachedAlready = (api: Api) => (id: string): TE.TaskEither<unknown, string> => pipe(
   id,
   api.fetchMember,
@@ -26,8 +35,8 @@ const fetchAndCacheActor = (api: Api, event: InboxCommentCreatedEvent) => pipe(
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const fetchAndCacheDiscussion = (api: Api, event: InboxCommentCreatedEvent) => pipe(
   event.data.entryId,
-  // ensureLocalDiscussionNotCachedAlready(api),
-  // TE.chainW(api.fetchRemoteDiscussion),
+  ensureLocalDiscussionNotCachedAlready(api),
+  TE.chainW(api.fetchRemoteDiscussion),
   // TE.chainW(api.cacheDiscussion),
   TE.left,
 )

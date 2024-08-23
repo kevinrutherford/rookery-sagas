@@ -6,6 +6,7 @@ import * as t from 'io-ts'
 import { formatValidationErrors } from 'io-ts-reporters'
 import { cacheMember } from './cache-member'
 import { createComment } from './create-comment'
+import { fetchDiscussion, fetchRemoteDiscussion } from './fetch-discussion'
 import { fetchMember, fetchRemoteMember } from './fetch-member'
 import { fetchWorksAwaitingFrontMatter } from './fetch-works-awaiting-front-matter'
 import { localInstanceRead } from './local-instance-read'
@@ -49,6 +50,8 @@ export const instantiate = (logger: Logger, configVariables: unknown) => {
   return {
     cacheMember: cacheMember(headers),
     createComment: createComment(headers),
+    fetchDiscussion: fetchDiscussion(headers),
+    fetchRemoteDiscussion: fetchRemoteDiscussion(headers),
     fetchMember: fetchMember(headers),
     fetchRemoteMember: fetchRemoteMember(headers),
     fetchWorksAwaitingFrontMatter: fetchWorksAwaitingFrontMatter(headers),
