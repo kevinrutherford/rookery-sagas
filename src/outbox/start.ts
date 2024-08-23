@@ -49,7 +49,7 @@ const share = async (env: Config, logger: Logger, event: CommentCreated) => {
     },
     target: {
       type: 'discussion',
-      id: `${env.ROOKERY_HOSTNAME}/api/discussions/${event.data.entryId}`,
+      id: `${env.ROOKERY_HOSTNAME}/api/discussions/${event.data.discussionId}`,
     },
   }
   await pipe(

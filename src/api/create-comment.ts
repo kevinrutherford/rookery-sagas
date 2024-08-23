@@ -5,7 +5,7 @@ import { ApiHeaders } from './api-headers'
 import { FatalError } from '../invoke'
 
 type Comment = {
-  entryId: string,
+  discussionId: string,
   content: string,
 }
 

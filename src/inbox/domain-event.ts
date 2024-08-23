@@ -12,7 +12,7 @@ export const inboxCommentCreatedEvent = t.intersection([esEventBase, t.type({
     id: t.string,
     actorId: t.string,
     publishedAt: tt.DateFromISOString,
-    entryId: t.string,
+    discussionId: t.string,
     content: t.string,
   }),
 })])
