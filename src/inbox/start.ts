@@ -24,7 +24,13 @@ const fetchAndCacheActor = (api: Api, event: InboxCommentCreatedEvent) => pipe(
 )
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const fetchAndCacheDiscussion = (api: Api, event: InboxCommentCreatedEvent) => TE.left('')
+const fetchAndCacheDiscussion = (api: Api, event: InboxCommentCreatedEvent) => pipe(
+  event.data.entryId,
+  // ensureLocalDiscussionNotCachedAlready(api),
+  // TE.chainW(api.fetchRemoteDiscussion),
+  // TE.chainW(api.cacheDiscussion),
+  TE.left,
+)
 
 const propagate = (logger: Logger, api: Api) => async (esEvent: unknown): Promise<void> => {
   const e = inboxCommentCreatedEvent.decode(esEvent)
