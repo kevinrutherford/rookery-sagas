@@ -37,7 +37,7 @@ const fetchAndCacheDiscussion = (api: Api, event: InboxCommentCreatedEvent) => p
   event.data.entryId,
   ensureLocalDiscussionNotCachedAlready(api),
   TE.chainW(api.fetchRemoteDiscussion),
-  // TE.chainW(api.cacheDiscussion),
+  TE.chainW(api.cacheDiscussion),
   TE.left,
 )
 
