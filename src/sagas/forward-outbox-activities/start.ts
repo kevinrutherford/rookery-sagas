@@ -6,8 +6,8 @@ import { pipe } from 'fp-ts/function'
 import { formatValidationErrors } from 'io-ts-reporters'
 import { config, Config } from './config'
 import { CommentCreated, DomainEvent, domainEvent } from './domain-event'
-import { renderCommentCreatedActivity } from '../activity-pub/render-comment-created-activity'
-import { Logger } from '../logger'
+import { renderCommentCreatedActivity } from '../../activity-pub/render-comment-created-activity'
+import { Logger } from '../../logger'
 
 const logAxiosError = (logger: Logger, url: string) => (error: unknown): void => {
   const logPayload = (axios.isAxiosError(error)) ? ({

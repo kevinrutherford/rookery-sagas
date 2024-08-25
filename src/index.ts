@@ -2,11 +2,11 @@ import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
 import * as Api from './api'
 import { fetchCrossrefWork } from './crossref/fetch-crossref-work'
-import { fetchMissingFrontMatter } from './fetch-missing-front-matter'
-import * as Inbox from './inbox'
 import { Saga } from './invoke'
 import * as L from './logger'
-import * as Outbox from './outbox'
+import * as Inbox from './sagas/cache-inbox-activities'
+import { fetchMissingFrontMatter } from './sagas/fetch-missing-front-matter'
+import * as Outbox from './sagas/forward-outbox-activities'
 
 const main = async (): Promise<void> => {
   const logger = L.create({

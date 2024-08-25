@@ -5,7 +5,7 @@ import * as TE from 'fp-ts/TaskEither'
 import { flow, pipe } from 'fp-ts/function'
 import * as t from 'io-ts'
 import { formatValidationErrors } from 'io-ts-reporters'
-import { FetchFrontMatter, FrontMatterResponse } from '../fetch-missing-front-matter/fetch-front-matter'
+import { FetchFrontMatter, FrontMatterResponse } from '../sagas/fetch-missing-front-matter/fetch-front-matter'
 
 const crossrefResponse = t.type({
   message: t.type({

@@ -6,8 +6,8 @@ import * as TE from 'fp-ts/TaskEither'
 import * as B from 'fp-ts/boolean'
 import { pipe } from 'fp-ts/function'
 import { inboxCommentCreatedEvent, InboxCommentCreatedEvent } from './domain-event'
-import { Api } from '../api'
-import { Logger } from '../logger'
+import { Api } from '../../api'
+import { Logger } from '../../logger'
 
 const isDiscussionCachedLocallyAlready = (api: Api) => (id: string): T.Task<boolean> => pipe(
   id,
