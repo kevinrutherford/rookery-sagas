@@ -4,11 +4,12 @@ import { pipe } from 'fp-ts/function'
 import { formatValidationErrors } from 'io-ts-reporters'
 import * as Api from './api'
 import { fetchCrossrefWork } from './crossref/fetch-crossref-work'
+import { dispatch } from './eventstore/dispatch'
 import { Saga } from './invoke'
 import * as L from './logger'
 import * as Inbox from './sagas/cache-inbox-activities'
 import { fetchMissingFrontMatter } from './sagas/fetch-missing-front-matter'
-import * as Outbox from './sagas/forward-outbox-activities'
+import { propagate } from './sagas/forward-outbox-activities'
 import { config } from './sagas/forward-outbox-activities/config'
 
 const main = async (): Promise<void> => {
@@ -46,7 +47,8 @@ const main = async (): Promise<void> => {
   Inbox.start(logger, api)
 
   logger.info('Starting outbox')
-  Outbox.start(api, vars)
+
+  dispatch(propagate(api, vars))
 
   logger.info('Starting sagas')
   setInterval(invoke(fetchMissingFrontMatter(fetchCrossrefWork, api)), 31 * 1000)
