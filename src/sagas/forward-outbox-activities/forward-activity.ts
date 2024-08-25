@@ -1,6 +1,6 @@
 import { Config } from './config'
-import { renderCommentCreatedActivity } from '../../activity-pub/render-comment-created-activity'
 import { Api } from '../../api'
+import { renderCommentCreatedActivity } from '../activity-pub/render-comment-created-activity'
 import { CommentCreated, DomainEvent } from '../domain-event'
 import { Listener } from '../listener'
 

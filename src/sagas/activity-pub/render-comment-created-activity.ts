@@ -1,6 +1,6 @@
 import { Json } from 'io-ts-types'
-import { CommentCreated } from '../sagas/domain-event'
-import { Config } from '../sagas/forward-outbox-activities/config'
+import { CommentCreated } from '../domain-event'
+import { Config } from '../forward-outbox-activities/config'
 
 export const renderCommentCreatedActivity = (env: Config, event: CommentCreated): Json => ({
   '@context': ['https://www.w3.org/ns/activitystreams'],
