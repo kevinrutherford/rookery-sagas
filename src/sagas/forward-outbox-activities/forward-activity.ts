@@ -3,22 +3,22 @@ import { pipe } from 'fp-ts/function'
 import { Config } from './config'
 import { Api } from '../../api'
 import { renderCommentCreatedActivity } from '../activity-pub/render-comment-created-activity'
-import { DomainEvent } from '../domain-event'
 import { Listener } from '../listener'
 
-const isShareable = (env: Config) => (event: DomainEvent): boolean => Object.values(env).includes(event.data.actorId)
+const getFollowers = (env: Config) => (actorId: string) => (
+  Object.values(env).includes(actorId) ? ['http://commands:44001/inbox'] : []
+)
 
 export const forwardActivity = (api: Api, env: Config): Listener => (event) => {
   switch (event.type) {
     case 'comment-created':
       const activity = renderCommentCreatedActivity(env, event)
-      if (isShareable(env)(event)) {
-        return pipe(
-          ['http://commands:44001/inbox'],
-          T.traverseArray(api.postActivity(activity)),
-          T.map(() => undefined),
-        )
-      }
+      return pipe(
+        event.data.actorId,
+        getFollowers(env),
+        T.traverseArray(api.postActivity(activity)),
+        T.map(() => undefined),
+      )
     default:
       return T.of(undefined)
   }
