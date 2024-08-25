@@ -1,4 +1,5 @@
 import { END, EventStoreDBClient, excludeSystemEvents } from '@eventstore/db-client'
+import * as RA from 'fp-ts/ReadonlyArray'
 import * as T from 'fp-ts/Task'
 import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
@@ -6,7 +7,7 @@ import { domainEvent, DomainEvent } from '../sagas/forward-outbox-activities/dom
 
 export type Listener = (event: DomainEvent) => T.Task<void>
 
-export const dispatch = (listener: Listener): void => {
+export const dispatch = (listeners: ReadonlyArray<Listener>): void => {
   const client = EventStoreDBClient.connectionString('esdb://eventstore:2113?tls=false&keepAliveTimeout=10000&keepAliveInterval=10000')
   const subscription = client.subscribeToAll({
     fromPosition: END,
@@ -20,7 +21,11 @@ export const dispatch = (listener: Listener): void => {
       event,
       domainEvent.decode,
       TE.fromEither,
-      TE.chainTaskK(listener),
+      TE.chainTaskK((e) => pipe(
+        listeners,
+        RA.map((l) => l(e)), // SMELL -- must be a better way!
+        T.sequenceArray,
+      )),
     )()
   })
 }

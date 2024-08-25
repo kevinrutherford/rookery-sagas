@@ -14,7 +14,7 @@ const isShareable = (env: Config) => (event: DomainEvent): boolean => Object.val
 
 export const forwardActivity = (api: Api, env: Config): Listener => (event) => {
   if (isShareable(env)(event) && event.type === 'comment-created')
-    return share(api, env, event)
+    share(api, env, event)
   return async () => { }
 }
 
