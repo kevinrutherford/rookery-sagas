@@ -1,2 +1,2 @@
-export { start } from './start'
+export { propagate } from './start'
 

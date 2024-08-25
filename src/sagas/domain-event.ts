@@ -38,7 +38,7 @@ const doiEnteredEvent = t.intersection([esEventBase, t.type({
   }),
 })])
 
-export const inboxCommentCreatedEvent = t.intersection([esEventBase, t.type({
+const inboxCommentCreatedEvent = t.intersection([esEventBase, t.type({
   type: t.literal('inbox:comment-created'),
   data: t.type({
     id: t.string,

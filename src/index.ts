@@ -44,11 +44,11 @@ const main = async (): Promise<void> => {
   }
 
   logger.info('Starting inbox')
-  Inbox.start(logger, api)
 
   logger.info('Starting outbox')
 
   dispatch([
+    Inbox.propagate(logger, api),
     Outbox.forwardActivity(api, vars),
   ])
 

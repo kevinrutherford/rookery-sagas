@@ -1,13 +1,12 @@
-import { END, EventStoreDBClient, excludeSystemEvents } from '@eventstore/db-client'
 import { sequenceS } from 'fp-ts/Apply'
-import * as E from 'fp-ts/Either'
 import * as T from 'fp-ts/Task'
 import * as TE from 'fp-ts/TaskEither'
 import * as B from 'fp-ts/boolean'
 import { pipe } from 'fp-ts/function'
 import { Api } from '../../api'
 import { Logger } from '../../logger'
-import { inboxCommentCreatedEvent, InboxCommentCreatedEvent } from '../domain-event'
+import { InboxCommentCreatedEvent } from '../domain-event'
+import { Listener } from '../listener'
 
 const isDiscussionCachedLocallyAlready = (api: Api) => (id: string): T.Task<boolean> => pipe(
   id,
@@ -49,14 +48,10 @@ const fetchAndCacheDiscussion = (api: Api, event: InboxCommentCreatedEvent) => p
   )),
 )
 
-const propagate = (logger: Logger, api: Api) => async (esEvent: unknown): Promise<void> => {
-  const e = inboxCommentCreatedEvent.decode(esEvent)
-  if (E.isLeft(e))
-    return
-  const event = e.right
+export const propagate = (logger: Logger, api: Api): Listener => (event) => {
   logger.debug('Inbox: Event received', { type: event.type })
   if (event.type === 'inbox:comment-created') {
-    await pipe(
+    return pipe(
       {
         actor: fetchAndCacheActor(api, event),
         discussion: fetchAndCacheDiscussion(api, event),
@@ -65,22 +60,10 @@ const propagate = (logger: Logger, api: Api) => async (esEvent: unknown): Promis
       TE.mapLeft((errors) => {
         logger.error('Failed to deal with inbox comment', { errors: JSON.stringify(errors) })
       }),
-    )()
+      TE.toUnion,
+      T.map(() => { }), // SMELL -- must be a better way!
+    )
   }
-}
-
-export const start = (logger: Logger, api: Api): void => {
-  const client = EventStoreDBClient.connectionString('esdb://eventstore:2113?tls=false&keepAliveTimeout=10000&keepAliveInterval=10000')
-  const subscription = client.subscribeToAll({
-    fromPosition: END,
-    filter: excludeSystemEvents(),
-  })
-
-  subscription.on('data', (resolvedEvent) => {
-    const event = resolvedEvent.event
-    if (!event)
-      return
-    propagate(logger, api)(event)
-  })
+  return async () => { }
 }
 
