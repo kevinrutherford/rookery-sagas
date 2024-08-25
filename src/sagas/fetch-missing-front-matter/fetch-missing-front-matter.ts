@@ -6,7 +6,7 @@ import { FetchFrontMatter } from './fetch-front-matter'
 import { updateWork } from './update-work'
 import { Api } from '../../api'
 import { Saga } from '../../invoke'
-import { Work } from '../../resources/work'
+import { Work } from '../resources/work'
 
 const ONE_DAY = 24 * 60 * 60 * 1000
 

@@ -5,7 +5,7 @@ import { apiRead } from './api-read'
 import { localInstanceRead } from './local-instance-read'
 import { parseAs } from './parse-as'
 import { FatalError } from '../invoke'
-import { Discussion, discussionResponse } from '../resources/discussion'
+import { Discussion, discussionResponse } from '../sagas/resources/discussion'
 
 type Fetcher = (headers: ApiHeaders) => (id: string) => TE.TaskEither<FatalError, Discussion>
 

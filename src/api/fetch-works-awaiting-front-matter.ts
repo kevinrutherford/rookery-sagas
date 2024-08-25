@@ -4,7 +4,7 @@ import { ApiHeaders } from './api-headers'
 import { localInstanceRead } from './local-instance-read'
 import { parseAs } from './parse-as'
 import { FatalError } from '../invoke'
-import { Work, worksResponse } from '../resources/work'
+import { Work, worksResponse } from '../sagas/resources/work'
 
 type Fetcher = (headers: ApiHeaders) => () => TE.TaskEither<FatalError, ReadonlyArray<Work>>
 

@@ -3,7 +3,7 @@ import { pipe } from 'fp-ts/function'
 import { FetchFrontMatter, FrontMatterResponse } from './fetch-front-matter'
 import { Api } from '../../api'
 import { FatalError, Saga } from '../../invoke'
-import { Work } from '../../resources/work'
+import { Work } from '../resources/work'
 
 const handleResponse = (work: Work, api: Api) => (fmr: FrontMatterResponse): TE.TaskEither<FatalError, null> => {
   switch (fmr.type) {
