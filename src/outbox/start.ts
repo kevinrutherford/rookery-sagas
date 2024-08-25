@@ -3,9 +3,10 @@ import axios from 'axios'
 import * as E from 'fp-ts/Either'
 import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
-import * as t from 'io-ts'
 import { formatValidationErrors } from 'io-ts-reporters'
+import { config, Config } from './config'
 import { CommentCreated, DomainEvent, domainEvent } from './domain-event'
+import { renderCommentCreatedActivity } from '../activity-pub/render-comment-created-activity'
 import { Logger } from '../logger'
 
 const logAxiosError = (logger: Logger, url: string) => (error: unknown): void => {
@@ -20,38 +21,13 @@ const logAxiosError = (logger: Logger, url: string) => (error: unknown): void =>
   logger.error('Outbox: Request failed', logPayload)
 }
 
-const config = t.type({
-  ROOKERY_HOSTNAME: t.string,
-  USER_A1_ID: t.string,
-  USER_A2_ID: t.string,
-  USER_A3_ID: t.string,
-  USER_CRB_ID: t.string,
-})
-
-type Config = t.TypeOf<typeof config>
-
 const share = async (env: Config, logger: Logger, event: CommentCreated) => {
   const url = 'http://commands:44001/inbox'
   const headers = {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${env.USER_CRB_ID}`,
   }
-  const comment = {
-    '@context': ['https://www.w3.org/ns/activitystreams'],
-    type: 'Create',
-    actor: {
-      id: `${env.ROOKERY_HOSTNAME}/api/members/${event.data.actorId}`,
-    },
-    published: event.created, // SMELL -- potentially the wrong date
-    object: {
-      type: 'Note',
-      content: event.data.content,
-    },
-    target: {
-      type: 'discussion',
-      id: `${env.ROOKERY_HOSTNAME}/api/discussions/${event.data.discussionId}`,
-    },
-  }
+  const comment = renderCommentCreatedActivity(env, event)
   await pipe(
     TE.tryCatch(
       async () => axios.post(url, comment, { headers }),
