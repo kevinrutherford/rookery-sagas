@@ -1,5 +1,7 @@
+import * as E from 'fp-ts/Either'
 import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
+import { formatValidationErrors } from 'io-ts-reporters'
 import * as Api from './api'
 import { fetchCrossrefWork } from './crossref/fetch-crossref-work'
 import { Saga } from './invoke'
@@ -7,6 +9,7 @@ import * as L from './logger'
 import * as Inbox from './sagas/cache-inbox-activities'
 import { fetchMissingFrontMatter } from './sagas/fetch-missing-front-matter'
 import * as Outbox from './sagas/forward-outbox-activities'
+import { config } from './sagas/forward-outbox-activities/config'
 
 const main = async (): Promise<void> => {
   const logger = L.create({
@@ -14,6 +17,18 @@ const main = async (): Promise<void> => {
     colour: process.env.NODE_ENV !== 'production',
     level: process.env.LOG_LEVEL ?? 'debug',
   })
+
+  const vars = pipe(
+    process.env,
+    config.decode,
+    E.getOrElseW((errors) => {
+      logger.error('Outbox: Missing or incorrect config', {
+        errors: formatValidationErrors(errors),
+      })
+      throw new Error('Incorrect config')
+    }),
+  )
+
   const api = Api.instantiate(logger, process.env)
 
   const invoke = (saga: Saga) => async (): Promise<void> => {
@@ -31,7 +46,7 @@ const main = async (): Promise<void> => {
   Inbox.start(logger, api)
 
   logger.info('Starting outbox')
-  Outbox.start(api, process.env, logger)
+  Outbox.start(api, vars)
 
   logger.info('Starting sagas')
   setInterval(invoke(fetchMissingFrontMatter(fetchCrossrefWork, api)), 31 * 1000)
