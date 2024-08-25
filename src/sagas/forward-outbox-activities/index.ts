@@ -1,2 +1,2 @@
-export { propagate } from './start'
+export { forwardActivity } from './forward-activity'
 

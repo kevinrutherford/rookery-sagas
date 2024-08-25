@@ -9,7 +9,7 @@ import { Saga } from './invoke'
 import * as L from './logger'
 import * as Inbox from './sagas/cache-inbox-activities'
 import { fetchMissingFrontMatter } from './sagas/fetch-missing-front-matter'
-import { propagate } from './sagas/forward-outbox-activities'
+import * as Outbox from './sagas/forward-outbox-activities'
 import { config } from './sagas/forward-outbox-activities/config'
 
 const main = async (): Promise<void> => {
@@ -48,7 +48,7 @@ const main = async (): Promise<void> => {
 
   logger.info('Starting outbox')
 
-  dispatch(propagate(api, vars))
+  dispatch(Outbox.forwardActivity(api, vars))
 
   logger.info('Starting sagas')
   setInterval(invoke(fetchMissingFrontMatter(fetchCrossrefWork, api)), 31 * 1000)

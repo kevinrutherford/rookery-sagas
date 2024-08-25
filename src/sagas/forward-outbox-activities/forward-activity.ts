@@ -12,7 +12,7 @@ const share = (api: Api, env: Config, event: CommentCreated) => {
 
 const isShareable = (env: Config) => (event: DomainEvent): boolean => Object.values(env).includes(event.data.actorId)
 
-export const propagate = (api: Api, env: Config): Listener => (event) => {
+export const forwardActivity = (api: Api, env: Config): Listener => (event) => {
   if (isShareable(env)(event) && event.type === 'comment-created')
     return share(api, env, event)
   return async () => { }
