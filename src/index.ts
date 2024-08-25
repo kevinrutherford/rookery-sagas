@@ -31,7 +31,7 @@ const main = async (): Promise<void> => {
   Inbox.start(logger, api)
 
   logger.info('Starting outbox')
-  Outbox.start(process.env, logger)
+  Outbox.start(api, process.env, logger)
 
   logger.info('Starting sagas')
   setInterval(invoke(fetchMissingFrontMatter(fetchCrossrefWork, api)), 31 * 1000)

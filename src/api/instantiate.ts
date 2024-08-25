@@ -11,6 +11,7 @@ import { fetchDiscussion, fetchRemoteDiscussion } from './fetch-discussion'
 import { fetchMember, fetchRemoteMember } from './fetch-member'
 import { fetchWorksAwaitingFrontMatter } from './fetch-works-awaiting-front-matter'
 import { localInstanceRead } from './local-instance-read'
+import { sendActivity } from './send-activity'
 import { updateWork } from './update-work'
 import { Logger } from '../logger'
 
@@ -58,6 +59,7 @@ export const instantiate = (logger: Logger, configVariables: unknown) => {
     fetchRemoteMember: fetchRemoteMember(headers),
     fetchWorksAwaitingFrontMatter: fetchWorksAwaitingFrontMatter(headers),
     read: localInstanceRead(headers),
+    sendActivity: sendActivity(headers, logger),
     updateWork: updateWork(headers),
   }
 }
