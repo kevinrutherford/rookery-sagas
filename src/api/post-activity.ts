@@ -18,8 +18,8 @@ const logAxiosError = (logger: Logger, url: string) => (error: unknown): void =>
   logger.error('Outbox: Request failed', logPayload)
 }
 
-export const sendActivity = (headers: ApiHeaders, logger: Logger) =>
-  (url: string, activity: Json): T.Task<void> => pipe(
+export const postActivity = (headers: ApiHeaders, logger: Logger) =>
+  (activity: Json) => (url: string): T.Task<void> => pipe(
     TE.tryCatch(
       async () => axios.post(url, activity, { headers }),
       logAxiosError(logger, url),
