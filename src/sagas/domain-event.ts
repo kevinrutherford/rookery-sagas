@@ -38,10 +38,24 @@ const doiEnteredEvent = t.intersection([esEventBase, t.type({
   }),
 })])
 
+export const inboxCommentCreatedEvent = t.intersection([esEventBase, t.type({
+  type: t.literal('inbox:comment-created'),
+  data: t.type({
+    id: t.string,
+    actorId: t.string,
+    publishedAt: tt.DateFromISOString,
+    discussionId: t.string,
+    content: t.string,
+  }),
+})])
+
+export type InboxCommentCreatedEvent = t.TypeOf<typeof inboxCommentCreatedEvent>
+
 export const domainEvent = t.union([
   collectionCreatedEvent,
   commentCreatedEvent,
   doiEnteredEvent,
+  inboxCommentCreatedEvent,
 ])
 
 export type DomainEvent = {

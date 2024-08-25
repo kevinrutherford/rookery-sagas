@@ -1,7 +1,7 @@
 import { Config } from './config'
-import { CommentCreated, DomainEvent } from './domain-event'
 import { renderCommentCreatedActivity } from '../../activity-pub/render-comment-created-activity'
 import { Api } from '../../api'
+import { CommentCreated, DomainEvent } from '../domain-event'
 import { Listener } from '../listener'
 
 const share = (api: Api, env: Config, event: CommentCreated) => {

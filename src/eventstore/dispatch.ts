@@ -3,7 +3,7 @@ import * as RA from 'fp-ts/ReadonlyArray'
 import * as T from 'fp-ts/Task'
 import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
-import { domainEvent } from '../sagas/forward-outbox-activities/domain-event'
+import { domainEvent } from '../sagas/domain-event'
 import { Listener } from '../sagas/listener'
 
 export const dispatch = (listeners: ReadonlyArray<Listener>): void => {
