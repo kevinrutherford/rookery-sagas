@@ -1,2 +1,2 @@
-export { propagate } from './start'
+export { cacheActivity } from './cache-activity'
 

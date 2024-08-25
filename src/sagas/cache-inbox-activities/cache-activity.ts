@@ -48,7 +48,7 @@ const fetchAndCacheDiscussion = (api: Api, event: InboxCommentCreatedEvent) => p
   )),
 )
 
-export const propagate = (logger: Logger, api: Api): Listener => (event) => {
+export const cacheActivity = (logger: Logger, api: Api): Listener => (event) => {
   logger.debug('Inbox: Event received', { type: event.type })
   if (event.type === 'inbox:comment-created') {
     return pipe(

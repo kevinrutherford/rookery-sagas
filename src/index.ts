@@ -43,16 +43,13 @@ const main = async (): Promise<void> => {
     logger.info('fetchMissingFrontMatter finished')
   }
 
-  logger.info('Starting inbox')
-
-  logger.info('Starting outbox')
-
+  logger.info('Starting listener sagas')
   dispatch([
-    Inbox.propagate(logger, api),
+    Inbox.cacheActivity(logger, api),
     Outbox.forwardActivity(api, vars),
   ])
 
-  logger.info('Starting sagas')
+  logger.info('Starting periodic sagas')
   setInterval(invoke(fetchMissingFrontMatter(fetchCrossrefWork, api)), 31 * 1000)
 }
 
