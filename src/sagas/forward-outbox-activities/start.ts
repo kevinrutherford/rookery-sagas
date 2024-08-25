@@ -1,5 +1,6 @@
 import { END, EventStoreDBClient, excludeSystemEvents } from '@eventstore/db-client'
 import * as E from 'fp-ts/Either'
+import { pipe } from 'fp-ts/function'
 import { Config } from './config'
 import { CommentCreated, DomainEvent, domainEvent } from './domain-event'
 import { renderCommentCreatedActivity } from '../../activity-pub/render-comment-created-activity'
@@ -13,11 +14,7 @@ const share = async (api: Api, env: Config, event: CommentCreated) => {
 
 const isShareable = (env: Config) => (event: DomainEvent): boolean => Object.values(env).includes(event.data.actorId)
 
-const propagate = (api: Api, env: Config) => (esEvent: unknown): void => {
-  const e = domainEvent.decode(esEvent)
-  if (E.isLeft(e))
-    return
-  const event = e.right
+const propagate = (api: Api, env: Config) => (event: DomainEvent): void => {
   if (!isShareable(env)(event))
     return
   if (event.type === 'comment-created')
@@ -35,7 +32,11 @@ export const start = (api: Api, vars: Config): void => {
     const event = resolvedEvent.event
     if (!event)
       return
-    propagate(api, vars)(event)
+    pipe(
+      event,
+      domainEvent.decode,
+      E.map(propagate(api, vars)),
+    )
   })
 }
 
