@@ -43,10 +43,8 @@ const propagate = (env: Config, logger: Logger) => (esEvent: unknown): void => {
   if (E.isLeft(e))
     return
   const event = e.right
-  logger.debug('Outbox: Event received', { type: event.type })
   if (!isShareable(env)(event))
     return
-  logger.debug('Outbox: Shareable event received', { type: event.type })
   if (event.type === 'comment-created')
     share(env, logger, event)
 }
