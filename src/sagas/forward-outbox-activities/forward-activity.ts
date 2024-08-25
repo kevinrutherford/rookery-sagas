@@ -14,8 +14,9 @@ export const forwardActivity = (api: Api, env: Config): Listener => (event) => {
       const activity = renderCommentCreatedActivity(env, event)
       if (isShareable(env)(event)) {
         return pipe(
-          'http://commands:44001/inbox',
-          api.postActivity(activity),
+          ['http://commands:44001/inbox'],
+          T.traverseArray(api.postActivity(activity)),
+          T.map(() => undefined),
         )
       }
     default:
