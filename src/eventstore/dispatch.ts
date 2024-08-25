@@ -3,9 +3,8 @@ import * as RA from 'fp-ts/ReadonlyArray'
 import * as T from 'fp-ts/Task'
 import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
-import { domainEvent, DomainEvent } from '../sagas/forward-outbox-activities/domain-event'
-
-export type Listener = (event: DomainEvent) => T.Task<void>
+import { domainEvent } from '../sagas/forward-outbox-activities/domain-event'
+import { Listener } from '../sagas/listener'
 
 export const dispatch = (listeners: ReadonlyArray<Listener>): void => {
   const client = EventStoreDBClient.connectionString('esdb://eventstore:2113?tls=false&keepAliveTimeout=10000&keepAliveInterval=10000')
