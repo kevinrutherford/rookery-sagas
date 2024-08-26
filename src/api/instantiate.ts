@@ -8,6 +8,7 @@ import { cacheDiscussion } from './cache-discussion'
 import { cacheMember } from './cache-member'
 import { createComment } from './create-comment'
 import { fetchDiscussion, fetchRemoteDiscussion } from './fetch-discussion'
+import { fetchFollowers } from './fetch-followers'
 import { fetchMember, fetchRemoteMember } from './fetch-member'
 import { fetchWorksAwaitingFrontMatter } from './fetch-works-awaiting-front-matter'
 import { localInstanceRead } from './local-instance-read'
@@ -56,6 +57,7 @@ export const instantiate = (logger: Logger, configVariables: unknown) => {
     fetchDiscussion: fetchDiscussion(headers),
     fetchRemoteDiscussion: fetchRemoteDiscussion(headers),
     fetchMember: fetchMember(headers),
+    fetchFollowers: fetchFollowers(headers),
     fetchRemoteMember: fetchRemoteMember(headers),
     fetchWorksAwaitingFrontMatter: fetchWorksAwaitingFrontMatter(headers),
     read: localInstanceRead(headers),

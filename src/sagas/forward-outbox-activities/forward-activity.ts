@@ -6,17 +6,13 @@ import { Api } from '../../api'
 import { renderCommentCreatedActivity } from '../activity-pub/render-comment-created-activity'
 import { Listener } from '../listener'
 
-const getFollowers = (env: Config) => (actorId: string) => TE.right(
-  Object.values(env).includes(actorId) ? ['http://commands:44001/inbox'] : [],
-)
-
 export const forwardActivity = (api: Api, env: Config): Listener => (event) => {
   switch (event.type) {
     case 'comment-created':
       const activity = renderCommentCreatedActivity(env, event)
       return pipe(
         event.data.actorId,
-        getFollowers(env),
+        api.fetchFollowers,
         TE.chain(TE.traverseArray(api.postActivity(activity))),
         TE.toUnion,
         T.map(() => undefined),
