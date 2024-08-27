@@ -37,9 +37,7 @@ export const instantiate = (logger: Logger, configVariables: unknown) => {
     onRetry: (retryCount: number, error) => {
       logger.debug('Axios retry', {
         retryCount,
-        error: JSON.stringify(error),
         url: error.config?.url,
-        data: error.config?.data,
       })
     },
   })
