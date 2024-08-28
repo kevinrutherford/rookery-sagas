@@ -12,6 +12,7 @@
     "sourceMap": true,
     "incremental": true,
     "types": [
+      "jest",
       "node"
     ]
   },
