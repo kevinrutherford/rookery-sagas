@@ -46,7 +46,7 @@ const main = async (): Promise<void> => {
   logger.info('Starting listener sagas')
   dispatch([
     Inbox.cacheActivity(logger, api),
-    Outbox.forwardActivity(api, vars),
+    Outbox.forwardActivity(api, vars, logger),
   ])
 
   logger.info('Starting periodic sagas')

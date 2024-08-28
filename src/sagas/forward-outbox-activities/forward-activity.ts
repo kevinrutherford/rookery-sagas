@@ -4,12 +4,14 @@ import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
 import { Config } from './config'
 import { Api } from '../../api'
+import { Logger } from '../../logger'
 import { renderCommentCreatedActivity } from '../activity-pub/render-comment-created-activity'
 import { Listener } from '../listener'
 
-export const forwardActivity = (api: Api, env: Config): Listener => (event) => {
+export const forwardActivity = (api: Api, env: Config, logger: Logger): Listener => (event) => {
   switch (event.type) {
     case 'comment-created':
+      logger.debug('Forwarding comment', { event: JSON.stringify(event, (_, v) => (typeof v === 'bigint' ? v.toString() : v)) })
       const activity = renderCommentCreatedActivity(env, event)
       return pipe(
         event.data.actorId,

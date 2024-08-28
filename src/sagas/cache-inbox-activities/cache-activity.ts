@@ -49,8 +49,8 @@ const fetchAndCacheDiscussion = (api: Api, event: InboxCommentCreatedEvent) => p
 )
 
 export const cacheActivity = (logger: Logger, api: Api): Listener => (event) => {
-  logger.debug('Inbox: Event received', { type: event.type })
   if (event.type === 'inbox:comment-created') {
+    logger.debug('Inbox: Event received', { type: event.type })
     return pipe(
       {
         actor: fetchAndCacheActor(api, event),

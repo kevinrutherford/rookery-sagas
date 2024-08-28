@@ -18,10 +18,13 @@ const logAxiosError = (logger: Logger, url: string) => (error: unknown): void =>
 }
 
 export const postActivity = (headers: ApiHeaders, logger: Logger) =>
-  (activity: Json) => (url: string): TE.TaskEither<unknown, void> => pipe(
-    TE.tryCatch(
-      async () => axios.post(url, activity, { headers }),
-      logAxiosError(logger, url),
-    ),
-  )
+  (activity: Json) => (url: string): TE.TaskEither<unknown, void> => {
+    logger.debug('Posting activity', { url, activity: JSON.stringify(activity) })
+    return pipe(
+      TE.tryCatch(
+        async () => axios.post(url, activity, { headers }),
+        logAxiosError(logger, url),
+      ),
+    )
+  }
 
