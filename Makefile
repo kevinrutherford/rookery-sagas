@@ -5,32 +5,41 @@ IMAGE_VERSION := $(shell git describe --tags)
 MK_IMAGE  := .mk-built
 MK_COMPILED     := .mk-compiled
 MK_LINTED       := .mk-linted
+MK_TESTED := .mk-tested
 SOURCES         := $(shell find src -type f)
+TESTS := $(shell find test -type f)
 
 depcruise := npx depcruise --config $(DEPCRUISE_CONFIG)
 
-.PHONY: all build-dev ci-* clean clobber dev lint watch-*
+.PHONY: all build-dev ci-* clean clobber dev diagrams lint watch-*
 
 # Software development - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-all: $(GRAPHS_DIR)/modules.svg $(GRAPHS_DIR)/arch.svg $(MK_LINTED)
+all: diagrams $(MK_TESTED) $(MK_LINTED)
 
-watch-compiler: node_modules
-	npx tsc --watch
-
-$(MK_COMPILED): node_modules $(SOURCES) tsconfig.json
+$(MK_COMPILED): node_modules $(SOURCES) $(TESTS) tsconfig.json
 	npx tsc --noEmit
 	@touch $@
 
-$(MK_LINTED): node_modules .eslintrc.js $(SOURCES)
-	npx eslint src --ext .ts
+$(MK_TESTED): node_modules $(SOURCES) $(TESTS) jest.config.js
+	npx jest
+	@touch $@
+
+$(MK_LINTED): node_modules .eslintrc.js $(SOURCES) $(TESTS)
+	npx eslint src test --ext .ts
 	npx ts-unused-exports tsconfig.json --silent --ignoreTestFiles
 	$(depcruise) src
 	@touch $@
 
+watch-compiler: node_modules
+	npx tsc --watch
+
+watch-tests: node_modules
+	 npx jest --watch
+
 # CI pipeline - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-ci-test: clean $(MK_COMPILED) $(MK_LINTED)
+ci-test: clean $(MK_COMPILED) $(MK_TESTED) $(MK_LINTED)
 
 # Production build - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -56,6 +65,11 @@ node_modules: package.json .nvmrc
 	npm install
 	@touch $@
 
+diagrams: $(GRAPHS_DIR)/modules.svg $(GRAPHS_DIR)/components.svg $(GRAPHS_DIR)/arch.svg
+
+$(GRAPHS_DIR)/components.svg: $(SOURCES) $(GRAPHS_DIR) node_modules $(DEPCRUISE_CONFIG)
+	$(depcruise) --validate -T dot --collapse 3 src | dot -Tsvg > $@
+
 $(GRAPHS_DIR)/modules.svg: $(SOURCES) $(GRAPHS_DIR) node_modules $(DEPCRUISE_CONFIG)
 	$(depcruise) --validate -T dot src | dot -Tsvg > $@
 
@@ -68,7 +82,7 @@ $(GRAPHS_DIR):
 # Utilities - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 clean:
-	rm -f $(MK_COMPILED) $(MK_LINTED)
+	rm -f $(MK_COMPILED) $(MK_LINTED) $(MK_TESTED)
 	rm -rf $(GRAPHS_DIR)
 
 clobber: clean
