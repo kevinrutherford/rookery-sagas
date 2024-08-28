@@ -6,8 +6,8 @@ export const toAbsoluteUrl = (env: Config) => (path: string): string => {
     .replace(/\/api$/, '')
   const resource = path.replace(new RegExp(/^\//), '')
     .replace(/\/*api/, '')
-  return /localhost/.test(host)
-    ? `${host}/${resource}`
-    : `${host}/api/${resource}`
+  return /:\/\//.test(host)
+    ? `${host}/api/${resource}`
+    : `${host}/${resource}`
 }
 
