@@ -5,8 +5,11 @@ import { Config } from '../../../src/sagas/forward-outbox-activities/config'
 describe('toAbsoluteUrl', () => {
   describe.each([
     ['https://subdomain.example.com'],
+    ['https://subdomain.example.com/'],
+    ['https://subdomain.example.com/api/'],
+    ['localhost:44002'],
+    ['localhost:44002/'],
   ])('given the ROOKERY_HOSTNAME "%s"', (hostname) => {
-    const path = arbitraryWord()
     const env: Config = {
       ROOKERY_HOSTNAME: hostname,
       USER_A1_ID: arbitraryWord(),
@@ -14,10 +17,20 @@ describe('toAbsoluteUrl', () => {
       USER_A3_ID: arbitraryWord(),
       USER_CRB_ID: arbitraryWord(),
     }
-    const result = toAbsoluteUrl(env)(path)
 
-    it('ends with the given path', () => {
-      expect(result).toMatch(new RegExp(`.*${path}$`))
+    describe.each([
+      [arbitraryWord()],
+      ['/' + arbitraryWord()],
+    ])('and "%s" for the path', (path) => {
+      const result = toAbsoluteUrl(env)(path)
+
+      it('ends with the given path', () => {
+        expect(result).toMatch(new RegExp(`.*${path}$`))
+      })
+
+      it('has exactly one / before the path', () => {
+        expect(result).not.toMatch(new RegExp(`.*//${path}$`))
+      })
     })
   })
 })
