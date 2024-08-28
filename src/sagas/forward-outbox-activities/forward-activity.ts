@@ -1,3 +1,4 @@
+import * as RA from 'fp-ts/ReadonlyArray'
 import * as T from 'fp-ts/Task'
 import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
@@ -13,6 +14,7 @@ export const forwardActivity = (api: Api, env: Config): Listener => (event) => {
       return pipe(
         event.data.actorId,
         api.fetchFollowers,
+        TE.map(RA.map((follower) => follower.attributes.inboxUrl)),
         TE.chain(TE.traverseArray(api.postActivity(activity))),
         TE.toUnion,
         T.map(() => undefined),

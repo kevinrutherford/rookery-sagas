@@ -7,11 +7,23 @@ import { parseAs } from './parse-as'
 import { FatalError } from '../invoke'
 import { Logger } from '../logger'
 
-const followersResponse = t.type({
-  data: t.array(t.string), // SMELL -- should be Member resources
+const follower = t.type({
+  type: t.literal('follower'),
+  id: t.string,
+  attributes: t.type({
+    inboxUrl: t.string,
+  }),
 })
 
-type Fetcher = (headers: ApiHeaders, logger: Logger) => (id: string) => TE.TaskEither<FatalError, ReadonlyArray<string>>
+type Follower = t.TypeOf<typeof follower>
+
+const followersResponse = t.type({
+  data: t.array(follower),
+})
+
+type Fetcher = (headers: ApiHeaders, logger: Logger)
+=> (id: string)
+=> TE.TaskEither<FatalError, ReadonlyArray<Follower>>
 
 export const fetchFollowers: Fetcher = (headers, logger) => (id) => pipe(
   `/members/${encodeURIComponent(id)}/followers`,
