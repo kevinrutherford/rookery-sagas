@@ -5,17 +5,24 @@ import { ApiHeaders } from './api-headers'
 import { localInstanceRead } from './local-instance-read'
 import { parseAs } from './parse-as'
 import { FatalError } from '../invoke'
+import { Logger } from '../logger'
 
 const followersResponse = t.type({
   data: t.array(t.string), // SMELL -- should be Member resources
 })
 
-type Fetcher = (headers: ApiHeaders) => (id: string) => TE.TaskEither<FatalError, ReadonlyArray<string>>
+type Fetcher = (headers: ApiHeaders, logger: Logger) => (id: string) => TE.TaskEither<FatalError, ReadonlyArray<string>>
 
-export const fetchFollowers: Fetcher = (headers) => (id) => pipe(
+export const fetchFollowers: Fetcher = (headers, logger) => (id) => pipe(
   `/members/${encodeURIComponent(id)}/followers`,
   localInstanceRead(headers),
   TE.chainEitherK(parseAs(followersResponse)),
-  TE.map((res) => res.data),
+  TE.bimap(
+    fe => {
+      logger.error(fe.message, fe.payload)
+      return fe
+    },
+    res => res.data,
+  ),
 )
 

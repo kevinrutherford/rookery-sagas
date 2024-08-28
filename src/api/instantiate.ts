@@ -55,7 +55,7 @@ export const instantiate = (logger: Logger, configVariables: unknown) => {
     fetchDiscussion: fetchDiscussion(headers),
     fetchRemoteDiscussion: fetchRemoteDiscussion(headers),
     fetchMember: fetchMember(headers),
-    fetchFollowers: fetchFollowers(headers),
+    fetchFollowers: fetchFollowers(headers, logger),
     fetchRemoteMember: fetchRemoteMember(headers),
     fetchWorksAwaitingFrontMatter: fetchWorksAwaitingFrontMatter(headers),
     read: localInstanceRead(headers),
