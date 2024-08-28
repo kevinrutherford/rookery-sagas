@@ -6,7 +6,7 @@ export const renderCommentCreatedActivity = (env: Config, event: CommentCreated)
   '@context': ['https://www.w3.org/ns/activitystreams'],
   type: 'Create',
   actor: {
-    id: `${env.ROOKERY_HOSTNAME}/api/members/${event.data.actorId}`,
+    id: `${env.ROOKERY_HOSTNAME}/members/${event.data.actorId}`, // SMELL -- with/without /api ?
   },
   published: event.created.toISOString(), // SMELL -- potentially the wrong date
   object: {
@@ -15,7 +15,7 @@ export const renderCommentCreatedActivity = (env: Config, event: CommentCreated)
   },
   target: {
     type: 'discussion',
-    id: `${env.ROOKERY_HOSTNAME}/api/discussions/${event.data.discussionId}`,
+    id: `${env.ROOKERY_HOSTNAME}/discussions/${event.data.discussionId}`,
   },
 })
 
