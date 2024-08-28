@@ -4,9 +4,9 @@ import { Config } from '../../../src/sagas/forward-outbox-activities/config'
 
 describe('toAbsoluteUrl', () => {
   describe.each([
-    ['https://subdomain.example.com'],
-    ['https://subdomain.example.com/'],
-    ['https://subdomain.example.com/api/'],
+    ['subdomain.example.com'],
+    ['subdomain.example.com/'],
+    ['subdomain.example.com/api/'],
     ['localhost:44002'],
     ['localhost:44002/'],
   ])('given the ROOKERY_HOSTNAME "%s"', (hostname) => {
@@ -29,7 +29,8 @@ describe('toAbsoluteUrl', () => {
       })
 
       it('has exactly one / before the path', () => {
-        expect(result).not.toMatch(new RegExp(`.*//${path}$`))
+        expect(result).toMatch(/\//)
+        expect(result).not.toMatch(/\/\//)
       })
     })
   })
