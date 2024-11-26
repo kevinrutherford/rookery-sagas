@@ -13,7 +13,7 @@
   "dependencies": {
     "@eventstore/db-client": "6.2.1",
     "@godaddy/terminus": "4.12.1",
-    "axios": "1.7.7",
+    "axios": "1.7.8",
     "axios-retry": "4.5.0",
     "chalk": "4.1.2",
     "fp-ts": "2.16.9",
